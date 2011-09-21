@@ -1,0 +1,3069 @@
+%% UPUTE ZA AUTORE %%
+% - Svaka recenica zadatka u svoj redak (lakse editiranje/diffanje).
+% - stil/gramatika/pravopis
+%   - izbjegavati "dakanje" -> "je li" / "li"
+%   - "nabrojati" -> "nabrojiti"
+%   - Njd prevodilac, Gjd prevodioca; Nmn prevodioci, Gmn prevodilaca. Isto vrijedi za sve imenice na -lac.
+%   - spojnice npr. LL(1)-gramatika, LR-parsiranje i dr.
+%   - koristiti drugo lice množine, a ne u infinitiv ("objasnite algoritam X", a ne "objasniti algoritam X")
+% - simboli
+%   - nakon tocke koja nije kraj recenice umjesto razmaka staviti ~ (npr.~123)
+%   - za epsilon koristiti \varepsilon umjesto \epsilon
+%   - za minus uvijek koristiti \(-\), nikako samo -
+%   - za tildu koristiti \sim umjesto \tilde{}
+% - u alltt okruzenju
+%   - za subskript i superskript koristiti \sb{} i \sp{} jer su _ i ^ obicni znakovi
+%   - znakove _ i & ne treba prefiksirati s \
+% - ostalo
+%   - za inline math koristiti \(...\), a ne $...$ (ovo drugo je deprecated TeX nacin)
+%   - sve važne nizove u zadatku (npr. niz koji treba leksirati/parsirati) staviti u \texttt{} (text tele-type)
+%       - na taj nacin ce biti istaknuti i nece biti prelomljeni
+%   - preferirati \texttt{} ispred \verb
+%       - If \texttt{your text} produces the same result as \verb+your text+, then there’s no need of \verb in the first place.
+
+%% komentari vezani uz reference na udžbenik/auditorne  %%
+% %udzb/str x	gradivo vezano uz zadatak nalazi se na stranici x
+% %udzb/str x-y	gradivo vezano uz zadatak nalazi se na stranicama od x do y
+% %udzb/str x,y gradivo vezano uz zadatak nalazi se na stranicama x i y
+% %aud/prim x	sličan zadatak nalazi se u auditornim vježbama pod brojem x
+
+\documentclass[times, 12pt, utf8]{book}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[croatian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{multirow}
+
+\usepackage{alltt}
+\renewcommand{\ttdefault}{txtt}
+
+\usepackage{listings}
+\usepackage{array}
+
+% ubacuje hiperlinkove u TOC
+\usepackage{hyperref}
+
+% omogucuje nastavljanje enumeratea nakon sto se zavrsi
+\usepackage{enumitem}
+
+\usepackage[a4paper, top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm]{geometry}
+\pagestyle{plain}
+
+% paket za povecanje proreda linija
+\usepackage{setspace}
+
+% kod koji brise "Poglavlje" ispred naslova svakog poglavlja
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+\vspace*{50 pt}%
+{\setlength{\parindent}{0pt} \raggedright \normalfont
+\bfseries\Huge
+\ifnum \value{secnumdepth}>1 
+   \if@mainmatter\thechapter.\ \fi%
+\fi
+#1\par\nobreak\vspace{40 pt}}}
+\makeatother
+
+
+% naredba za generiranje opisnika jezicnog procesora
+% koristi se sa \JP{Z}{I}{C} za JP pisan jezikom iZgradnje koji prevodi Izvorni jezik u Ciljni jezik
+% vim makro za zamijeniti eksplicitni zapis s ovim je (ako sam neki zaboravio)
+% f{l"zxf{l"ixf}h"cxF\F\ldf)iJP{"zpa}{"ipa}{"cpa}
+% treba pozicionirati kursor u normalnom modu na prvi \ (onaj koji otvara math mode u trenutnom zapisu, ispred JP)
+% ili bilo gdje ispred ako izmedju nema znaka {
+% makro unistava registre z,i,c i pretpostavlja da su svi jezici oznaceni jednim slovom
+\newcommand{\JP}[3]{\(JP_{#1}^{#2 \to #3}\)}
+
+% vim makro za konverziju $...$ u \(...\) sto je preporuceni format za latex math env
+% kursor treba postaviti na lijevi $
+% xi\(f$xi\)
+
+\title{
+\vfill
+Skripta sa zadacima za pripremu iz predmeta \\
+Prevođenje programskih jezika \\
+\vspace{70pt}
+}
+\author{
+\emph{Pripremili:} \\
+Ivan Žužak, Ivan Budiselić, Zvonimir Pavlić, \\
+Dejan Škvorc, Miroslav Popović, Goran Delač \\}
+\date{
+\vspace{30pt} 
+\emph{Datum posljednje izmjene:} \\
+21. rujna 2011.\\
+\vfill
+Fakultet elektrotehnike i računarstva \\
+Zavod za elektroniku, mikroelektroniku, inteligentne i računalne sustave
+}
+\begin{document}
+\maketitle
+
+% kod koji mice prazne stranice prije pocetka chaptera ako chapter ne pocinje na parnoj stranici
+\let\cleardoublepage\clearpage
+
+\tableofcontents
+
+
+\chapter*{Predgovor}
+\addcontentsline{toc}{chapter}{Predgovor}
+
+\begin{spacing}{1.5}
+Ova skripta zadataka namijenjena je kao dopunski nastavni materijal za predmet \href{http://www.fer.unizg.hr/predmet/ppj_a}{Prevođenje programskih jezika} na Fakultetu elektrotehnike i računarstva Sveučilišta u Zagrebu. 
+U svojoj PDF inačici, skripta je besplatno dostupna na Web-stranici predmeta.
+Skripta je nastala 2011.~godine sakupljanjem i uređivanjem zadataka i teorijskih pitanja iz ispita, međuispita i auditornih vježbi predmeta \emph{Prevođenje programskih jezika} od 2008.~godine nadalje i predmeta \emph{Automati, formalni jezici i jezični procesori 2} od 1999.~do 2008.~godine.
+Posebno zahvaljujemo autorima zadataka bez kojih izdavanje ovakve skripte ne bi bilo moguće:
+Ivan Budiselić,
+Goran Delač,
+Ivan Gavran,
+Andro Milanović,
+Miroslav Popović,
+Daniel Skrobo,
+Dejan Škvorc,
+Ivan Žužak.
+
+Zadaci su u skripti organizirani u poglavlja, pri čemu naslovi poglavlja odgovaraju naslovima poglavlja u udžbeniku \emph{Prevođenje programskih jezika} \cite{udzbenik}.
+Uz zadatake je naznačen i dio udžbenika u kojem se obrađuje dio gradiva nužan za rješavanje zadatka i je li sličan zadatak riješen u sklopu auditornih vježbi.
+Rad na skripti nastavlja se i dalje, ali i u svom trenutnom obliku ona može biti korisna za savladavanje gradiva predmeta.
+
+Skripta je oblikovana pomoću tipografskog sustava \LaTeX{}.
+S ciljem unaprjeđenja kvalitete skripte, izvorni \LaTeX{} kod skripte javno je dostupan na adresi \url{http://github.com/fer-ppj/ppj-zbirka}.
+Molimo korisnike skripte da uočene pogreške ili primjedbe dojave na službenu e-mail adresu predmeta \href{mailto:ppj@zemris.fer.hr}{ppj@zemris.fer.hr} ili na stranicu za primjedbe: \url{http://github.com/fer-ppj/ppj-zbirka/issues}. 
+
+Zahvaljujemo Vedrani Janković na komentarima i prijavama pogrešaka pri pripremi ove inačice skripte.
+\end{spacing}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Uvod}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+
+% 1999 - 1MI - 2 - (1)
+\item
+Navedite prednosti i nedostatke uporabe jezičnih procesora. \cite[str.~1]{udzbenik}
+
+% 2000 - 1MI - 10 - (1)
+\item
+Navedite četiri jezika koji su vezani uz definiciju jezičnog procesora. \cite[str.~3]{udzbenik}
+
+% 2001 - 1MI - 2 - (1)
+\item
+Navedite koja pravila se susreću kod programskih jezika te ih objasnite. \cite[str.~4-11]{udzbenik}
+
+% 2001 - 1MI - 4 - (1)
+\item
+Objasnite samoprevodioca. \cite[str.~27]{udzbenik}
+
+% 2010 - 1MI - 3 - (1)
+\item
+Objasnite cilj i osnovne korake postupka samopodizanja. \cite[str.~3]{udzbenik}
+
+% 2002 - 1MI - 2 - (1)
+\item
+Objasnite što je funkcija preslikavanja jezičnog procesora i navedite njezine vrste. \cite[str.~26]{udzbenik}
+
+% 2003 - 1MI - 4 - (1)
+\item
+Objasnite podjelu jezičnih procesora s obzirom na broj prolazaka kroz izvorni program. \cite[str.~24-26]{udzbenik}
+
+% 2004 - 1MI - 2 - (1)
+\item
+Navedite i objasnite korake analize izvornog programa. \cite[str.~3-13]{udzbenik}
+
+% 2007 - 1MI - 2 - (1)
+\item
+Objasnite razradbu jezičnih procesora s obzirom na dinamiku izvođenja procesa prevođenja. \cite[str.~24-26]{udzbenik}
+
+% 2009 - 1MI - 1 - (1)
+% 2003 - 1MI - 2 - (1)
+\item
+Nabrojite i ukratko objasnite svaki od osnovnih koraka u izgradnji jezičnog procesora. \cite[str.~3]{udzbenik}
+
+% 2009 - P1MI - 2 - (1)
+% 2009 - P2MI - 1 - (1)
+% 2009 - P3MI - 1 - (1)
+% 2009 - P2MI-L - 1 - (1)
+\item
+Koristeći Hoareov sustav oznaka CSP, opišite vrste jezičnih procesora s obzirom na dinamiku izvođenja. \cite[str.~24]{udzbenik}
+
+% 2010 - 1MI - 4 - (1)
+\item
+Objasnite kompilatore i interpretatore, odnosno njihovu razliku, ne koristeći Hoareov sustav oznaka CSP. \cite[str.~24-26]{udzbenik}
+
+% 2009 - 3MI - 1 - (1)
+% 2000 - 1MI - 2 - (1)
+% 2009 - P1MI - 1 - (1)
+% 2010 - 1MI - 1 - (1)
+% 2010 - P1MI - 1 - (1)
+% 2010 - P2MI - 1 - (1)
+% 2010 - P1MI-L - 1 - (1)
+% 2010 - P2MI-L - 1 - (1)
+% 2010 - P3MI - 1 - (1)
+% 2010 - P3MI-L - 1 - (1)
+\item
+Navedite faze rada jezičnog procesora od kojih se sastoje faza analize izvornog programa i faza sinteze ciljnog programa. \cite[str.~3-4]{udzbenik} \cite{auditorne}
+
+% 2000 - 1MI - 1 - (1)
+\item
+Za svako od tri računala \textit{A}, \textit{B} i \textit{C} s odgovarajućim strojnim jezicima \textit{a}, \textit{b} i \textit{c} izgradite jezične procesore koji prevode jezik \textit{l} u jezik \textit{n} i koji su izvedivi na pojedinim računalima. 
+Jezične procesore treba izgraditi pomoću raspoloživih jezičnih procesora \JP{l}{l}{n}, \JP{a}{l}{a}, \JP{b}{n}{o}, \JP{o}{o}{b} i \JP{c}{o}{c}. \cite[str.~27]{udzbenik}
+%aud/prim 8
+
+% 2001 - 1MI - 3 - (1)
+\item
+Za računalo \textit{A} postoji gotov jezični procesor \JP{a}{l}{a}, dok je na računalu \textit{B} na raspolaganju jezični procesor \JP{b}{n}{c}.
+Računalo \textit{C} novo je računalo i za njega ne postoji nikakav jezični procesor, a potrebno je program napisan u jeziku \textit{m} prevesti u ciljni program za to računalo.
+Raspoloživ je i jezični procesor \JP{m}{m}{n}, a zbog modularnosti je potrebno napisati jezični procesor \JP{?}{m}{l}.
+Odredite u kojem je višem jeziku (\textit{l}, \textit{m} ili \textit{n}) potrebno napisati taj jezični procesor da bi se na najkraći mogući način preveo program te navedite najkraći postupak prevođenja programa iz jezika \textit{m} u ciljni jezik \textit{c}. \cite[str.~27]{udzbenik}  \cite{auditorne}
+%aud/prim 8
+
+% 2003 - 1MI - 1 - (1)
+\item
+Tijekom razvoja složenog sustava koji se sastoji od tri računalne arhitekture \textit{A}, \textit{B} i \textit{C} pojavila se potreba za razvojem jezičnog procesora \JP{b}{o}{b}.
+Za potrebe sustava već su napisani jezični procesori \JP{a}{l}{a}, \JP{c}{l}{n} i \JP{c}{o}{b}.
+Osim toga, preko Interneta su javno dostupna još tri jezična procesora: \JP{l}{m}{b}, \JP{m}{n}{o} i \JP{n}{o}{b}.
+Budući da se projekt približava krajnjem roku, nema dovoljno vremena za pisanje novog jezičnog procesora pa je potrebno jezični procesor \JP{b}{o}{b} konstruirati pomoću raspoloživih jezičnih procesora. 
+Napišite postupak konstrukcije. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+% 2004 - 3MI - 1 - (1)
+% AV - 6 - (1)
+\item
+Za računalo A postoji jezični procesor \JP{a}{z}{x}, dok je na računalu B dostupan jezični procesor \JP{b}{x}{a}. 
+Raspoloživ je i jezični procesor \JP{z}{x}{y}. 
+Odredite u kojem višem programskom jeziku (\textit{x}, \textit{y} ili \textit{z}) treba izgraditi jezični procesor \JP{?}{y}{b}, tako da se može ostvariti prevođenje programa napisanog u jeziku x u ciljni jezik b. 
+Navedite sve korake u postupku prevođenja programa. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+% 2007 - 1MI - 6 - (1)
+\item
+Računalni sustav sastoji se od jednog računala arhitekture \textit{A} i jednog računala arhitekture \textit{B}.
+Za računalnu arhitekturu \textit{B} razvijen je jezični procesor \JP{b}{c}{b} kojim je omogućeno izvođenje programa napisanih višim programskim jezikom \textit{c} na računalu arhitekture \textit{B}.
+Osim toga, na raspolaganju su jezični procesori \JP{p}{c}{b}, \JP{p}{p}{b}, \JP{c}{p}{a} i \JP{c}{c}{b}.
+Uporabom navedenih jezičnih procesora izgradite jezični procesor koji će na računalu arhitekture \textit{A} omogućiti prevođenje programa napisanih višim programskim jezikom \textit{p} u programe izvodive na računalu arhitekture \textit{B}. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+% 2009 - 1MI - 8 - (1)
+% 2010 - 1MI - 9 - (1)
+\item
+Prikažite postupak izgradnje izvodivog jezičnog procesora koji prevodi jezik \textit{l} u strojni jezik \textit{a}.
+Na raspolaganju su samoprevodilac koji prevodi jezik \textit{l} u strojni jezik \textit{a}, \JP{a}{p}{s}, \JP{a}{s}{a}, \JP{b}{l}{q}, \JP{b}{r}{a} i \JP{r}{q}{p} te računala \textit{A} i \textit{B} na kojima se mogu izvoditi programi pisani strojnim jezicima \textit{a} i \textit{b}. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+% 2009 - P1MI - 8 - (1)
+% 2009 - P2MI - 6 - (1)
+% 2009 - P2MI-L - 4 - (1)
+% 2010 - P1MI - 7 - (1)
+% 2002 - 1MI - 1 - (1)
+\item
+Tijekom razvoja složenog sustava koji se sastoji od dvije računalne arhitekture \textit{A} i \textit{B} pojavila se potreba za razvojem jezičnog procesora \JP{b}{l}{a}.
+Za potrebe sustava već je napisan jezični procesor \JP{a}{m}{a}.
+Osim toga, preko Interneta su javno dostupna još četiri jezična procesora: \JP{m}{l}{b}, \JP{l}{m}{a}, \JP{l}{l}{a} i \JP{m}{m}{b}.
+Budući da se projekt približava krajnjem roku, nema dovoljno vremena za pisanje novog jezičnog procesora pa je potrebno jezični procesor \JP{b}{l}{a} konstruirati pomoću raspoloživih jezičnih procesora.
+Napišite postupak konstrukcije \JP{b}{l}{a}. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+% 1999 - 1MI - 3 - (1)
+\item
+Za novo računalo “Amiga 2001” (računalo \textit{C}) kao osnovni jezik treba upotrijebiti “C++” (jezik \textit{m}) pa je potrebno izgraditi jezični procesor \JP{c}{m}{c}.
+Na “PC” računalu (računalo \textit{B}) postoji jezični procesor \JP{b}{l}{b}, koji prevodi jezik “C” (jezik \textit{l}) u Intelov strojni jezik te jezični procesor \JP{b}{k}{c}, koji prevodi jezik “BCPL” (jezik \textit{k}) u strojni jezik računala “Amiga 2001”.
+Na raspolaganju je i računalo “Amiga 4000” (računalo \textit{A}) sa pripadnim jezičnim procesorom \JP{a}{k}{a}, koji prevodi jezik “BCPL” u Motorolin strojni jezik.
+Pored ovoga postoje i jezični procesori \JP{k}{l}{k} (kros-kompilator) koji prevodi jezik “C” u jezik “BCPL” i koji je napisan u “BCPL”-u te \JP{l}{m}{c} koji prevodi “C++” u strojni jezik računala “Amiga 2001”, a napisan je u “C”-u.
+Napišite postupak samopodizanja kojim se može dobiti traženi jezični procesor uz uporabu postojećih jezičnih procesora. \cite[str.~27]{udzbenik} \cite{auditorne}
+%aud/prim 8
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Leksička analiza}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 1999 - 1MI - 6 - (2)
+\item
+Opišite dinamiku izvođenja leksičke analize. \cite[str.~52]{udzbenik}
+
+% 1999 - 1MI - 8 - (2)
+\item 
+Opišite program simulator leksičkog analizatora zasnovan na tablici prijelaza \(\varepsilon\)-NKA. \cite[str.~60-62]{udzbenik}
+
+% 1999 - 3MI - 1 - (2)
+\item 
+Opišite način izrade globalne tablice znakova. \cite[str.~50-52]{udzbenik}
+
+% 2001 - 1MI - 7 - (2)
+\item
+Nabrojite i objasnite osnovne klase leksičkih jedinki. \cite[str.~46-49]{udzbenik}
+
+% 2002 - 1MI - 4 - (2)
+\item
+Opišite program simulator leksičkog analizatora zasnovan na tablici prijelaza DKA. \cite[str.~58-60]{udzbenik}
+
+% 2004 - 1MI - 4 - (2)
+\item
+Objasnite kako leksički analizator utvrđuje leksičku pogrešku i navedite dva postupka oporavka od pogreške. \cite[str.~58]{udzbenik}
+
+% 2004 - 1MI - 7 - (2)
+\item
+Navedite namjenu programa Lex i opišite strukturu ulazne datoteke Lexa. \cite[str.~64-70]{udzbenik}
+
+% 2007 - 1MI - 4 - (2)
+\item
+Opišite podatkovne strukture leksičkog analizatora. \cite[str.~49-52]{udzbenik}
+
+% 2007 - 1MI - 7 - (2)
+\item
+Objasnite metode opisa leksičkih jedinki, pravila određivanja klasa leksičkih jedinki i postupak grupiranja leksičkih jedinki koje se koriste za izgradnju generatora leksičkog analizatora. \cite[str.~56-58]{udzbenik}
+
+% 2009 - 1MI - 2 - (2)
+% 2010 - P1MI-L - 2 - (2)
+\item
+Navedite i ukratko objasnite pet zadataka leksičkog analizatora. \cite[str.~44-45]{udzbenik}
+
+% 2009 - 2MI - 1 - (2)
+\item
+Navedite i na primjeru objasnite dva osnovna načina razrješavanja nejednoznačnosti u leksičkoj analizi. \cite[str.~63-64]{udzbenik}
+
+% 2009 - 1MI - 3 - (2)
+% 2009 - P1MI - 4 - (2)
+% 2009 - P2MI-E - 1 - (2)
+% 2010 - 1MI - 5 - (2)
+\item
+Navedite i objasnite varijable koje koristi simulator zasnovan na tablici prijelaza DKA.
+U ovisnosti o navedenim varijablama, objasnite postupak simulatora za grupiranje i određivanje klase leksičke jedinke. \cite[str.~58-69]{udzbenik}
+% 2010 - 2MI - 2 - (2)
+% 2010 - P1MI-L - 5 - (2)
+
+\item
+Objasnite postupak razrješenja nejednoznačnosti u leksičkoj analizi pretraživanjem lijevog konteksta. \cite[str.~63-64]{udzbenik}
+
+% 2000 - 1MI - 6 - (2)
+% 2010 - P1MI-L - 5 - (2)
+\item
+Objasnite postupak razrješenja nejednoznačnosti pretraživanjem desnog konteksta. \cite[str.~63-64]{udzbenik}
+
+% 2010 - P1MI - 2 - (2)
+% 2010 - P1MI-L - 4 - (2)
+\item
+Navedite pravila za određivanje klase leksičke jedinke i grupiranje znakova u leksičke jedinke. \cite[str.~57-58]{udzbenik}
+
+% 2010 - P1MI - 3 - (2)
+% 2010 - P1MI-L - 3 - (2)
+\item
+Navedite ulaze i izlaze iz generatora leksičkog analizatora i leksičkog analizatora ako je leksički analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~53]{udzbenik}
+
+% 2010 - P1MI - 4 - (2)
+\item
+Navedite strukture podataka pogodne za ostvarenje tablice znakova i asimptotsku složenost osnovnih operacija nad tablicom znakova za svaku predloženu strukturu podataka. \cite[str.~50-52]{udzbenik}
+
+% 2010 - P1MI - 5 - (2)
+\item
+Opišite algoritam leksičkog analizatora zasnovanog na tablici prijelaza DKA. \cite[str.~58-60]{udzbenik}
+
+% 1999 - 1MI - 9 - (2)
+\item 
+Za zadani program nacrtajte sve tablice koje se stvaraju u leksičkoj analizi.
+Ključne riječi označene su masnim slovima. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\textbf{program} Phoebe;
+  j:=1; k:=1;
+  ispiši (j,k);
+  \textbf{za} i:=3 \textbf{do} 20 \bf{čini}
+    k:=j+k;
+    j:=k-j;
+    ispiši (k);
+  \textbf{kraj}
+\textbf{kraj}
+\end{alltt}
+%aud/prim 2
+
+% 2000 - 1MI - 4 - (2)
+\item
+Zadan je program u jeziku čije su ključne riječi, operatori i specijalni znakovi: \verb|main|, \verb|if|, \verb|for|, \verb|(|, \verb|)|, \verb|{|, \verb|}|, \verb|;|, \verb|>|, \verb|<|, \verb|=|, \verb|+|, \verb|-|, \verb|*|.
+Ispišite sve tablice koje su izlaz leksičkog analizatora. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\noindent
+\begin{alltt}
+main()
+\verb|{|
+  a23=c+b57*27-3*a5;
+  if(a>77)
+  \verb|{|
+    a=a23;
+    a=a+c;
+  \verb|}|
+  for(i=0;i<12;i=i+1)
+  \verb|{|
+    a=a+i;
+    b57=a5-3.7*a5;
+    i=i+1;
+  \verb|}|
+\verb|}|
+\end{alltt} 
+%aud/prim 2
+
+% 2001 - 2MI - 10 - (2)
+\item
+Konstruirajte sve izlazne tablice leksičkog analizatora za dani izvorni program.
+Ključne riječi u programu masno su otisnute, a konstante su u kurzivu. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\textbf{import} javax.swing.*;
+\textbf{public class} FrameDemo \verb|{|
+  \textbf{public static void} main(String[] args) \verb|{|
+    JFrame jframe=\textbf{new} JFrame(\textit{"Example"});
+    jframe.setSize(\textit{400},\textit{100});
+    jframe.setVisible(\textit{true});
+  \verb|}|
+\verb|}|
+\end{alltt} 
+%aud/prim 2
+
+% 2002 - 1MI - 3 - (2)
+\item
+Za zadani isječak kôda napišite sadržaje svih tablica leksičkog analizatora.
+Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\textbf{if} (!fread(&id32, \textbf{sizeof}(\textbf{struct} ID3v2_Header),1,fp) ||
+    strncmp(id32.id,"ID3",3))
+  \textbf{return} 0;
+\end{alltt} 
+%aud/prim 2
+
+% 2004 - 2MI - 3 - (2)
+\item
+Napišite sve izlazne tablice simulatora leksičkog analizatora programskog jezika C za zadani isječak ulaznog programa.
+Pretpostavite da leksički analizator uspješno grupira višeznakovne operatore. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | c | } \hline
+Pozicija & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\ \hline
+Znak & i & f & ( & i & f & 3 & = & = & 2 & ) & b & 2 & + & + & ; \\ \hline
+\end{tabular}
+
+\begin{tabular}{ | c | c | c | c | c | c | c | c | c | c | c | } \hline
+Pozicija & 16 & 17 & 18 & 19 & 20 & 21 & 22 & 23 & 24 & 25 \\ \hline
+Znak & e & l & s & e & b & 2 & + & = & 2 & ; \\ \hline
+\end{tabular}
+%aud/prim 2
+
+% 2007 - 1MI - 1 - (2)
+\item
+Leksički analizirajte zadani programski odsječak te konstruirati sve izlazne tablice leksičkog analizatora.
+Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\textbf{double} factor = 0.356E-6;
+\textbf{int} f1(\textbf{const} \textbf{double} &x) \verb|{|
+  \textbf{if} (!(x*factor< temp.treshold))
+    \textbf{return} temp.high;
+  \textbf{return} temp.low;
+\verb|}|
+\end{alltt} 
+%aud/prim 2
+
+% 2009 - P3MI - 2 - (2)
+% 2003 - 2MI - 1 - (2)
+\item
+Konstruirajte sve izlazne tablice leksičkog analizatora za zadani programski odsječak napisan u programskom jeziku C.
+Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+clock_t clock (\textbf{void})
+\verb|{|
+  \textbf{struct} timeb now;
+  clock_t elapsed;
+ 
+  /* Calculate the difference between the initial time and now. */
+ 
+  ftime(&now);
+  elapsed=(now.time-_itimeb.time)*20;
+  \textbf{return}(elapsed);
+\verb|}|
+\end{alltt} 
+%aud/prim 2
+
+% 2010 - P1MI-L - 7 - (2)
+\item
+Leksički analizirajte zadani programski odsječak te konstruirati sve izlazne tablice leksičkog analizatora.
+Ključne su riječi podvučene, a sve su linije koje započinju znakom \texttt{\#} komentari. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\underline{def} format_cond(string_list, c):
+  # funkcija formatira ulaznu listu string_list ovisno o vrijednosti
+  # parametra c
+  format_func = \underline{lambda} s: " ".join(s.split())
+  \underline{for} s \underline{in} string_list:
+    rez.append(format_func(s))
+  \underline{return} rez
+\end{alltt} 
+%aud/prim 2
+
+% AV - 1 - (2)
+\item
+Leksički analizirajte zadani programski odsječak te konstruirati sve izlazne tablice leksičkog analizatora.
+Ključne su riječi podvučene. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\underline{const} \underline{string} Instrument = "Gitara";
+\underline{enum} Padez \verb|{| Nominativ, Genetiv, Dativ, Akuzativ \verb|}|;
+\underline{int} a = (\underline{int}) Padez.Nominativ + (\underline{int}) Padez. Akuzativ;
+Instrument += "Klasicna";
+\end{alltt} 
+%aud/prim 2
+
+% 2000 - 2MI - 1 - (2)
+% 2010 - 1MI - 6 - (2)
+\item
+Za sljedeći niz izgradite tablicu uniformnih znakova, tablicu identifikatora i tablicu konstanti: \texttt{AKOI>31ONDAA++;INACEA+=4;}
+
+Ključne riječi i operatori, identifikatori te konstante definirani su izrazima: 
+\begin{alltt}
+KROS := < | > | AKO | ONDA | INACE | + | - | = | ;
+IDN := slovo ( slovo | brojka )*
+KON := (brojka)+
+\end{alltt}
+
+Slovo i brojka redom označavaju velika i mala slova abecede te znamenke dekadskog sustava.
+Za razrješavanje nejednoznačnosti u grupiranju i određivanju klase leksičke jedinke koristite pravilo grupiranja najduljeg prefiksa koji je definiran barem jednim regularnim izrazom.
+Za prefikse jednake duljine, prednost ima izraz koji je zadan prvi. \cite[str.~51]{udzbenik} \cite{auditorne}
+%aud/prim 2
+
+% 2001 - 1MI - 10 - (2)
+\item
+Ostvaren je program simulator leksičkog analizatora zasnovan na tablici prijelaza DKA s jednostavnim postupkom oporavka od pogreške.
+Simulator prepoznaje dva niza: \texttt{AUTO} i \texttt{AUTOMOBIL}.
+Na ulazu automata pojavljuje se niz \texttt{AUTOMATSKIAUTOMOBIL}.
+Odredite koje će nizove simulator leksičkog analizatora prepoznati i hoće li ispisati neke greške.
+Potrebno je i ispisati tablicu stanja unutarnjih kazaljki (početak, završetak i posljednji) programa simulatora za svaki učitani znak. \cite[str.~58-60]{udzbenik}
+
+% 2003 - 1MI - 3 - (2)
+\item
+Generatoru leksičkog analizatora potrebno je zadati pravila za analizu Booleovih izraza.
+Booleovi se izrazi sastoje od identifikatora (počinju slovom), Booleovih konstanti (\texttt{TRUE} i \texttt{FALSE}), operatora (\texttt{\&}, \texttt{\(\vert\)}, \texttt{\(\hat{\ }\)}, \texttt{\(\sim\)} i \texttt{=}) te okruglih zagrada.
+Napišite sve regularne izraze i akcije simulatora. \cite[str.~47-48]{udzbenik} \cite{auditorne}
+%aud/prim 3
+
+% 1999 - 1MI - 1 - (2)
+\item
+U simulatoru leksičkog analizatora za aritmetičke izraze, potrebno je razriješiti nejednoznačnost uzrokovanu uporabom unarnih operatora.
+Aritmetički izrazi sastoje se od identifikatora (počinju slovom), cjelobrojnih konstanti, operatora \{\texttt{+}, \texttt{\(-\)}, \texttt{*}, \texttt{/} i \texttt{=}\} te okruglih zagrada.
+Napišite sve regularne izraze i akcije simulatora. \cite[str.~47-48]{udzbenik} \cite{auditorne}
+%aud/prim 3
+
+% 2010 - P1MI - 10 - (2)
+% 2010 - P2MI - 8 - (2)
+\item
+Zadan je jezik L koji sadrži cjelobrojne aritmetičke izraze.
+Leksičke su jedinke jezika L varijable, konstante, binarni operatori \{\texttt{+}, \texttt{\(-\)}, \texttt{*}, \texttt{/}\}, okrugle zagrade i unarni operatori \{\texttt{\(-\)}, \texttt{++}, \texttt{\(--\)}\}.
+Varijable se sastoje od slova i brojki te moraju započinjati slovom, a konstante su cjelobrojne.
+Unarni operator \texttt{\(-\)} označava negaciju varijable ili konstante.
+Unarni operatori \texttt{++} i \texttt{\(--\)} imaju značenje kao u jeziku C.
+Definirajte pravila leksičkog analizatora kojima se ulazni niz rastavlja na leksičke jedinke. \cite[str.~47-48]{udzbenik}
+
+% 2009 - 1MI - 7 - (2)
+\item
+U postupku sintaksne analize programskog jezika X potrebno je razlikovati dekadske, oktalne i heksadekadske pozitivne cjelobrojne konstante.
+Napišite regularne izraze koji će omogućiti ispravno određivanje klase cjelobrojne konstante u leksičkoj analizi.
+Oktalne konstante započinju znamenkom \texttt{0} (npr. \texttt{0134}, \texttt{071} i \texttt{00032}).
+Dopušteno je da dekadske konstante započinju vodećim nulama ako sadrže barem jednu znamenku \texttt{8} ili \texttt{9} (dekadske su konstante npr. \texttt{00039}, \texttt{488} i \texttt{455}).
+Heksadekadske konstante započinju nizom 0x i dalje sadrže dekadske znamenke i mala slova \texttt{a}, \texttt{b}, \texttt{c}, \texttt{d}, \texttt{e}, \texttt{f}  (npr. \texttt{0x13a}, \texttt{0x043f} i \texttt{0x00fed}). \cite[str.~47-48]{udzbenik}
+
+% 2009 - 2MI - 7 - (2)
+\item
+Prikažite postupak obrade i izlaz leksičkog analizatora zasnovanog na regularnim izrazima iz tablice na sljedećim ulaznim nizovima (obrada svakog niza je nezavisna): \cite[str.~47-48]{udzbenik} \cite{auditorne}\\
+i. aabab\\
+ii. ababbba\\
+iii. abababc
+
+\begin{tabular}{|c|c|c|} \hline
+r1 & aab(c)* & ispiši("r1") \\ \hline
+r2 & (a)*b & ispiši("r2") \\ \hline
+r3 & abab & ispiši("r3") \\ \hline
+r4 & ab / c & ispiši("r4") \\ \hline
+r5 & ababb & uđi u stanje S; ODBACI; \\ \hline
+r6 & bbb & ispiši("r6") \\ \hline
+r7 & $<$S$>$ bba & ispiši("r7"); izađi iz stanja S; \\ \hline
+r8 & (c)* & ispiši("r8") \\ \hline
+\end{tabular}
+%aud/prim 3
+
+% 2010 - 1MI - 8 - (2)
+\item
+Prikažite postupak obrade i izlaz leksičkog analizatora zasnovanog na regularnim izrazima iz tablice na sljedećim ulaznim nizovima (obrada svakog niza je nezavisna):\\
+1) aababcaaab\\
+2) ccababbba
+
+Prikažite koji su znakovi ulaznih nizova uspješno grupirani pomoću kojih regularnih izraza. Nije potrebno prikazivati rad analizatora u smislu varijabli koje koristi analizator zasnovan na tablici prijelaza DKA ili \(\varepsilon\)-NKA. \cite[str.~47-48]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{|c|c|c|} \hline
+r1 & aab(c)* & ispiši("r1") \\ \hline
+r2 & (a)*b & ispiši("r2") \\ \hline
+r3 & abab & ispiši("r3") \\ \hline
+r4 & ab / c & ispiši("r4") \\ \hline
+r5 & ababb & uđi u stanje S; ODBACI; \\ \hline
+r6 & bbb & ispiši("r6") \\ \hline
+r7 & $<$S$>$ bba & ispiši("r7"); izađi iz stanja S; \\ \hline
+r8 & (c)* & ispiši("r8") \\ \hline
+\end{tabular} 
+%aud/prim 3
+
+% 2010 - P1MI - 8 - (2)
+% 2010 - P1MI-L - 8 - (2)
+% 2010 - P2MI-L - 8 - (2)
+% 2010 - P3MI-L - 8 - (2)
+\item
+Prikažite postupak obrade i izlaz leksičkog analizatora zasnovanog na regularnim izrazima iz tablice na sljedećim ulaznim nizovima (obrada svakog niza je nezavisna):\\
+1) aab\\
+2) aaa\%\%b\\
+3) b\#\%\%
+
+\begin{tabular}{|c|c|c|} \hline
+r1 & \%\%b & ispiši("r1") \\ \hline
+r2 & \%\%ba* & ispiši("r2") \\ \hline
+r3 & a & ispiši("r3") \\ \hline
+r4 & aa / b & ispiši("r4") \\ \hline
+r5 & aaa & ispiši("r5") \\ \hline
+r6 & b & ispiši("r6") \\ \hline
+r7 & b(\%$\mid$\#) & uđi u stanje S; ODBACI \\ \hline
+r8 & $<$S$>$ \#\%\% & ispiši("r8"); izađi iz stanja S \\ \hline
+\end{tabular}
+
+Prikažite koji su znakovi ulaznih nizova uspješno grupirani pomoću kojih regularnih izraza.
+Nije potrebno prikazivati rad analizatora u smislu varijabli koje koristi analizator zasnovan na tablici prijelaza DKA ili \(\varepsilon\)-NKA. \cite[str.~47-48]{udzbenik} \cite{auditorne}
+%aud/prim 3
+
+% AV - 2 - (2)
+\item
+Na osnovi navedenih pravila odredite i objasnite izlaz leksičkog analizatora za nizove a), b) i c). \cite[str.~47-48]{udzbenik} \cite{auditorne}\\
+a) yyy++x\\
+b) yyx\\
+c) x!++
+
+\begin{tabular}{|c|c|c|} \hline
+r1 & ++x & ispiši("r1") \\ \hline
+r2 & ++xy* & ispiši("r2") \\ \hline
+r3 & y & ispiši("r3") \\ \hline
+r4 & yy / x & ispiši("r4") \\ \hline
+r5 & yyy & ispiši("r5") \\ \hline
+r6 & x & ispiši("r6") \\ \hline
+r7 & x(+ \(\mid\) !) & uđi u stanje S; ODBACI \\ \hline
+r8 & \(<\)S\(>\) !++ & ispiši("r8"); izađi iz stanja S \\ \hline
+\end{tabular}
+%aud/prim 3
+
+% 2010 - 1MI - 7 - (2)
+\item
+Neka su zadana sljedeća pravila prevođenja u ulaznoj datoteci za program LEX:
+
+\begin{alltt}
+\%\%
+[a-z]+	;
+[0-4]+	;
+\end{alltt}
+
+Za sljedeći ulazni niz prikažite izlaz leksičkog analizatora generiranog programom LEX za prethodno navedena leksička pravila: \texttt{Aaa5+Bbb4+ccc+DDD=91} \cite[str.~64-70]{udzbenik}
+
+% 2010 - P1MI - 9 - (2)
+% 2010 - P1MI-L - 9 - (2)
+% 2010 - P3MI - 7 - (2)
+% 2009 - P1MI - 5 - (2)
+% 2009 - 1MI - 9 - (2)
+\item
+Za leksički analizator zasnovan na zadanom \(\varepsilon\)-NKA M = (\{\(q_{0}\), \(q_{1}\), \(q_{2}\), \(q_{3}\), \(q_{4}\)\}, \{\(a, b\)\}, \(\delta\), \(q_{0}\), \{\(q_{3}\), \(q_{4}\)\}) po koracima prikažite postupak računanja skupa \(\varepsilon\)-OKRUŽENJE(\(\delta\)(\{\(q_{0}\), \(q_{1}\)\}, \(a\))) koristeći stog i dva bit-vektora. \cite[str.~60-62]{udzbenik}
+
+\begin{tabular}{|c|c|c|c|} \hline
+
+\(\delta\) & a & b & \(\varepsilon\) \\ \hline
+\(q_{0}\) & \(\{q_{0}, q_{2}\}\) & \(\{q_{1}, q_{3}\}\) & \(\{q_{1}, q_{2}\}\) \\ \hline
+\(q_{1}\) & \(\{q_{3}\}\) & - & \(\{q_{0}, q_{3}\}\) \\ \hline
+\(q_{2}\) & - & - & \(\{q_{3}\}\) \\ \hline
+\(q_{3}\) & \(\{q_{1}, q_{4}\}\) & - & - \\ \hline
+\(q_{4}\) & - & \(\{q_{3}, q_{4}\}\) & - \\ \hline
+\end{tabular} 
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Sintaksna analiza}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 2009 - 2MI - 3 - (3)
+% 2010 - P2MI - 3 - (3)
+\item
+Definirajte relacije \emph{IspodZnaka} i \emph{ReduciranZnakom} za parsiranje tehnikom \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik}
+
+% 2010 - 1MI - 2 - (3)
+\item
+Navedite uvjete pod kojima je kontekstno neovisna gramatika ujedno i S-gramatika. \cite[str.~87]{udzbenik}
+
+% 2010 - P2MI-L - 4 - (3)
+% 2010 - 2MI - 3 - (3)
+\item
+Navedite uvjete pod kojima je kontekstno neovisna gramatika ujedno i LL(1)-gramatika. \cite[str.~98]{udzbenik}
+
+% 1999 - 2MI - 2 - (3)
+\item 
+Navedite postupak izgradnje kanonskog LR-parsera na temelju izgrađenog DKA. \cite[str.~150-151]{udzbenik}
+
+% 1999 - 2MI - 4 - (3)
+\item 
+Objasnite postupak određivanja relacija prednosti na temelju zadane gramatike. \cite[str.~133-135]{udzbenik}
+
+% 2009 - P2MI - 4 - (3)
+% 2009 - P2MI-L - 2 - (3)
+\item
+U pseudokodu sličnom jeziku C napišite algoritam parsiranja tehnikom prednosti operatora. \cite[str.~130-133]{udzbenik}
+
+% 2004 - 1MI - 9 - (3)
+\item
+Navedite i kratko opišite postupke pretvorbe produkcija u produkcije LL(1)-gramatike. \cite[str.~107-111]{udzbenik}
+
+% 1999 - 2MI - 6 - (3)
+% 2010 - 3MI - 4 - (3)
+\item
+Objasnite postupak lijevog izlučivanja za preuređivanje produkcija gramatike. \cite[str.~108]{udzbenik}
+
+% 2003 - 1MI - 9 - (3)
+\item
+Objasnite postupak uklanjanja lijeve rekurzije tijekom pretvorbe produkcija u LL(1) oblik. \cite[str.~110-111]{udzbenik}
+
+% 1999 - 2MI - 8 - (3)
+\item 
+Navedite algoritam za izračunavanje ZAPOČINJE skupova za produkcije. \cite[str.~102-103]{udzbenik}
+
+% 2000 - 2MI - 9 - (3)
+\item
+Opišite algoritam za izračunavanje relacije Ispred. \cite[str.~105-107]{udzbenik}
+
+% 2009 - 2MI - 2 - (3)
+% 2010 - P2MI - 4 - (3)
+\item
+Navedite korake u računanju PRIMIJENI skupova za produkcije. \cite[str.~107]{udzbenik}
+
+% 2002 - 1MI - 9 - (3)
+\item
+Opišite postupak računanja skupova SLIJEDI za prazne nezavršne znakove. \cite[str.~107]{udzbenik}
+
+% 2000 - 1MI - 8 - (3)
+% 2009 - P1MI - 3 - (3)
+% 2009 - P2MI - 2 - (3)
+\item
+Navedite i kratko opišite podatkovnu strukturu sintaksnog analizatora. \cite[str.~80]{udzbenik}
+
+% 2000 - 2MI - 2 - (3)
+% 2004 - 2MI - 4 - (3)
+\item
+Opišite kako se izvodi nadziranje i oporavak od pogrešaka kod LR-parsiranja. \cite[str.~153-154]{udzbenik}
+
+% 2000 - 2MI - 4 - (3)
+\item
+Objasnite parsiranje od dna prema vrhu metodom \emph{Pomakni-Reduciraj}. \cite[str.~126-130]{udzbenik}
+
+% 2010 - P2MI - 5 - (3)
+% 2007 - 2MI - 9 - (3)
+\item
+Navedite i definirajte korake algoritma izgradnje kanonskog LR(1)-parsera. \cite[str.~147-151]{udzbenik}
+
+% 2010 - 3MI - 5 - (3)
+% 2001 - 1MI - 9 - (3)
+\item
+Opišite postupak izgradnje potisnog automata za S-gramatiku. \cite[str.~87-88]{udzbenik}
+
+% 2001 - 2MI - 4 - (3)
+\item
+Definirajte LL(1)-gramatiku i kratko opišite konstrukciju potisnog automata za LL(1)-gramatiku. \cite[str.~95-99]{udzbenik}
+
+% 2010 - P2MI-L - 2 - (3)
+\item
+Navedite zadatke sintaksnog analizatora. \cite[str.~71]{udzbenik}
+
+% 2010 - P2MI-L - 3 - (3)
+\item
+Navedite ulaze i izlaze iz sintaksnog analizatora ako je sintaksni analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~71]{udzbenik}
+
+% 2010 - P2MI-L - 5 - (3)
+\item
+Objasnite pojmove parsiranje, parsiranje od dna prema vrhu i parsiranje od vrha prema dnu. \cite[str.~84,113]{udzbenik}
+
+% 2010 - 3MI - 1 - (3)
+\item
+Neovisno poredajte gramatike LL(1), S i Q te gramatike LALR(1), SLR(1), LR(0) i LR(1) uzlazno po općenitosti. \cite[str.~71-154]{udzbenik}
+
+% 2010 - 2MI - 4 - (3)
+% 2007 - 2MI - 4 -(3)
+\item
+Objasnite namjenu programa Yacc te dijelova ulazne datoteke za program Yacc. \cite[str.~154-158]{udzbenik}
+
+% 2010 - 2MI - 1 - (3)
+\item
+Ukratko objasnite postupak oporavka od pogreške kod LR-parsiranja koji se zasniva na traženju sinkronizacijskih znakova. \cite[str.~153-154]{udzbenik}
+
+% 2009 - 1MI - 4 - (3)
+\item
+Navedite pet različitih vrsta sustava oznaka za opis sintaksnih pravila. \cite[str.~81-95]{udzbenik}
+
+% 2009 - 1MI - 5 - (3)
+\item
+Opišite postupak sintaksne analize zasnovane na tablici Co-No. \cite[str.~83-84]{udzbenik}
+
+% 2007 - 2MI - 1 - (3)
+\item
+Objasnite parsiranje od dna prema vrhu tehnikom \emph{Pomakni-Reduciraj}. 
+Opišite tablice koje se koriste u parsiranju. \cite[str.~126-127]{udzbenik}
+
+% 2007 - 1MI - 9 - (3)
+\item
+Opišite algoritme na kojima se zasnivaju postupci oporavka od pogreške kod sintaksne analize. \cite[str.~113,153]{udzbenik}
+
+% 2004 - 2MI - 2 - (3)
+\item
+Objasnite parsiranje od dna prema vrhu metodom prednosti operatora, relaciju prednosti, akcije parsera i određivanje uzorka za zamjenu. \cite[str.~130-137]{udzbenik}
+
+% 2003 - 2MI - 2 - (3)
+\item
+Objasnite razlike u ostvarenju parsera LR(0), SLR(1), LALR i LR(1) te navedite njihove prednosti i nedostatke. \cite[str.~138]{udzbenik}
+
+% 2002 - 2MI - 3 - (3)
+\item
+Objasnite konstrukciju \(\varepsilon\)-NKA u postupku izgradnje SLR(1)-parsera. \cite[str.~147-149]{udzbenik}
+
+% 2003 - 1MI - 7 - (3)
+\item
+Navedite zahtjeve koje mora ispuniti detekcija pogrešaka u sintaksnom analizatoru. \cite[str.~79]{udzbenik}
+
+% 2002 - 1MI - 7 - (3)
+\item
+Objasnite sustav oznaka COBOL. \cite[str.~82]{udzbenik}
+
+% 2001 - 2MI - 2 - (3)
+\item
+Opišite postupak oporavka od pogrešaka u sintaksnom analizatoru. \cite[str.~79-80]{udzbenik}
+
+% 2001 - 2MI - 7 - (3)
+% 2009 - P2MI - 3 - (3)
+\item
+Objasnite akcije parsera od dna prema vrhu koji koristi tehniku \emph{Pomakni-Pronađi}. Opišite proturječja koja se pojavljuju. \cite[str.~123-125]{udzbenik}
+
+% 1999 - 2MI - 7 - (3)
+\item 
+Uklonite lijevu rekurziju iz sljedeće gramatike. \cite[str.~110-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A>b<B>a | b<B>a<A>b
+<A> \(\to\) <A>a<B>b | <B>a | a
+<B> \(\to\) <A>b | b
+\end{alltt} 
+
+% 2007 - 1MI - 8 - (3)
+\item
+Uklonite lijevu rekurziju iz dane gramatike. \cite[str.~110-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A>b<B>a | b<B>a<A>b
+<A> \(\to\) <B>b | b
+<B> \(\to\) <A>a | <B>a<A>b | a
+\end{alltt} 
+
+% 2001 - 2MI - 3 - (3)
+
+\item
+Uklonite lijevu rekurziju iz sljedeće gramatike. Odrediti je li dobivena gramatika LL(1). \cite[str.~110-111]{udzbenik}
+
+\begin{alltt} 
+<S> \(\to\) a<A>be<B>
+<A> \(\to\) <B>cd | a<A> | \(\varepsilon\)
+<B> \(\to\) <A>b<S>b | dc<S>a
+\end{alltt} 
+
+% 2010 - 2MI - 6 - (3)
+\item
+Na sljedeću gramatiku primijenite algoritam razrješavanja lijeve rekurzije: \cite[str.~110-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <A>a<A>b
+<A> \(\to\) <A>a | <A>b | c<A> | d<B> | f
+<B> \(\to\) f
+\end{alltt} 
+
+% 2002 - 1MI - 5 - (3)
+
+\item
+Uklonite lijevu rekurziju iz zadane gramatike. \cite[str.~110-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A><B> | b<B>
+<A> \(\to\) <A>b | <B>ac | a
+<B> \(\to\) <A>cb | bc
+\end{alltt} 
+
+% 2004 - 1MI - 8 - (3)
+\item
+Uklonite lijevu rekurziju iz zadane gramatike. Je li dobivena gramatika LL(1)? \cite[str.~110-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <Z>ef | ef<S><X><Z>
+<X> \(\to\) <Z>ee | fg<S>
+<Z> \(\to\) <X>ff | fe<X>f | \(\varepsilon\)
+\end{alltt}
+
+% 1999 - 2MI - 1 - (3)
+\item 
+Za zadanu Q-gramatiku konstruirajte potisni automat.
+Tijekom parsiranja ulaznog niza na vrhu stoga redom se pojavljuju sljedeći znakovi: \texttt{<S>}, \texttt{<A>}, \texttt{<B>}, \texttt{<B>}, \(\bigtriangledown\).
+Koji su se ulazni znakovi sigurno nalazili u parsiranom nizu? \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A><B> | b<A><B>
+<A> \(\to\) a<A> | b<A> | c | \(\varepsilon\)
+<B> \(\to\) d | e<B> | f<A> | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 9
+
+% 1999 - 3MI - 8 - (3)
+\item 
+Napišite gramatiku na temelju koje je konstruiran navedeni potisni automat te odredite o kojoj se gramatici radi. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{| c | c | c | c | }
+\hline
+   & a & b & $\perp$ \\ \hline
+ S & 1 & 2 & 8 \\ \hline
+ A & 3 & 4 & 8 \\ \hline
+ B & 5 & 6 & 8 \\ \hline
+ a & 7 & 8 & 8 \\ \hline
+ b & 8 & 7 & 8 \\ \hline
+ $\bigtriangledown$ & 8 & 8 & 9 \\ \hline
+\end{tabular}
+
+\noindent
+1. zamijeni aBbA; pomakni \\
+2. zamijeni bAaB; pomakni \\
+3. zamijeni bA; pomakni \\
+4. zamijeni B; zadrži \\
+5. izvuci; zadrži \\
+6. zamijeni aB; pomakni \\
+7. izvuci; pomakni \\
+8. odbaci \\
+9. prihvati 
+%aud/prim 10
+
+% 2000 - 1MI - 5 - (3)
+\item
+Za zadanu gramatiku konstruirajte konačni potisni automat i izrazite ga pomoću tablice.
+Prikažite rad potisnog automata na nizu \texttt{ebabc}. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <A><B> | d<C>
+<A> \(\to\) a<C><B> | \(\varepsilon\)
+<B> \(\to\) b<C> | e<S>
+<C> \(\to\) a<B> | c
+\end{alltt} 
+%aud/prim 9
+
+% 2000 - 2MI - 8 - (3)
+\item
+Iz navedenog potisnog automata rekonstruirajte gramatiku. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{| c | c | c | c | c | c | c | }
+\hline
+ & a & b & c & d & e & $\perp$ \\ \hline
+$<$S$>$ & 1 & 9 & 9 & 1 & 1 & 9 \\ \hline
+$<$A$>$ & 6 & 9 & 9 & 9 & 7 & 9 \\ \hline
+$<$B$>$ & 2 & 9 & 9 & 3 & 2 & 9 \\ \hline
+$<$C$>$ & 4 & 5 & 9 & 9 & 9 & 9 \\ \hline
+$\bigtriangledown$ & 9 & 9 & 9 & 9 & 9 & 8 \\ \hline
+\end{tabular}
+
+\noindent
+1: zadrži;	zamijeni ( d $<$A$>$ b $<$B$>$ ) \\
+2: zadrži;	zamijeni ( d $<$A$>$ ) \\
+3: pomakni;	zamijeni ( $<$C$>$ c $<$S$>$ ) \\
+4: pomakni;	zamijeni ( $<$C$>$ ) \\
+5: zadrži;	izvuci \\
+6: pomakni;	zamijeni ( $<$A$>$ ) \\
+7: pomakni;	izvuci \\
+8: prihvati \\
+9: odbaci \\
+%aud/prim 10
+
+% 2001 - 1MI - 5 - (3)
+\item
+Za zadanu gramatiku konstruirajte konačni potisni automat i izrazite ga pomoću tablice.
+Prikažite rad potisnog automata na nizu \texttt{cdabed}. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A>bc<B> | c<A>
+<A> \(\to\) a<A> | b | d<A>e<C>
+<B> \(\to\) b<B> | e<C>
+<C> \(\to\) c | d | e
+\end{alltt} 
+%aud/prim 9
+
+% 1999 - 2MI - 3 - (3)
+\item 
+Zadanu COBOL notaciju prevedite u BNF notaciju. \cite[str.~81-82]{udzbenik}
+
+$\begin{Bmatrix}
+\underline{A}\\ 
+\underline{B}\\ 
+\underline{C}D\\ 
+\underline{C}E
+\end{Bmatrix}
+\begin{Bmatrix}
+0\\ 
+1\\ 
+2
+\end{Bmatrix}
+...
+\begin{Bmatrix}
+\underline{A}\\ 
+\underline{B}\\ 
+D\underline{C}\\
+E\underline{C}
+\end{Bmatrix}$ 
+
+% 2000 - 1MI - 9 - (3)
+\item
+Zadanu gramatiku u BNF notaciji prevedite u COBOL notaciju. \cite[str.~81-82]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <D>CA | <D>CBA | <E>A
+<D> \(\to\) <D>D | ABC
+<E> \(\to\) <E>E | A
+\end{alltt} 
+
+% 2000 - 2MI - 5 - (3)
+\item
+Sljedeće pravilo zapisano u COBOL notaciji napišite u BNF notaciji: \cite[str.~81-82]{udzbenik}
+
+\[
+\underline{P}
+\begin{Bmatrix}
+\begin{bmatrix}
+\underline{A}\\ 
+\underline{N}
+\end{bmatrix}
+
+\begin{Bmatrix}
+\underline{N}\\ 
+K\underline{B}
+\end{Bmatrix}\\ 
+\\
+T\underline{NK}
+\end{Bmatrix}
+...
+\] 
+
+% 2001 - 1MI - 1 - (3)
+\item
+Navedeni izraz zapisan u COBOL notaciji pretvorite u BNF notaciju. \cite[str.~81-82]{udzbenik}
+
+\(A [B] ... [A [B] ...]...C[C]...\)
+
+% 2002 - 2MI - 2 - (3)
+\item
+Zadani BNF zapis pretvorite u COBOL zapis. \cite[str.~81-82]{udzbenik}
+
+\begin{alltt}
+<if> \(\to\) IF <izraz> THEN <blok>
+<if> \(\to\) IF <izraz> THEN <blok> ELSE <blok>
+<blok> \(\to\) N
+<blok> \(\to\) BEGIN <naredbe> END
+<naredbe> \(\to\) N
+<naredbe> \(\to\) N <naredbe>
+<izraz> \(\to\) A=B
+<izraz> \(\to\) A<>B
+<izraz> \(\to\) A<B
+<izraz> \(\to\) A<=B
+<izraz> \(\to\) A>B
+<izraz> \(\to\) A>=B
+\end{alltt} 
+
+% 2003 - 1MI - 6 - (3)
+\item
+Zadanu BNF notaciju pretvorite u COBOL notaciju. \cite[str.~81-82]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A> | b<B> | c<C>
+<A> \(\to\) ab<A> | bac<A> | c
+<B> \(\to\) a | bc<B> | c<C>ca
+<C> \(\to\) ab | ba
+\end{alltt}
+
+% 2004 - 1MI - 5 - (3)
+\item
+Zadani COBOL zapis pretvorite u BNF zapis. \cite[str.~81-82]{udzbenik}
+
+\[
+\begin{Bmatrix}
+\underline{C} \\ 
+\underline{B} \\ 
+\underline{L}
+\end{Bmatrix}
+...
+[\underline{NOT}]
+\begin{Bmatrix}
+\underline{2}\\ 
+\underline{TO}...
+\end{Bmatrix}
+\underline{B}
+[\underline{NOT}]
+...
+\] 
+
+% 2007 - 1MI - 5 - (3)
+\item
+Zadani COBOL zapis pretvorite u istovjetni BNF zapis. \cite[str.~81-82]{udzbenik}
+
+\[
+IF \ A \begin{Bmatrix}
+= \\ 
+!= \\ 
+< \\ 
+>
+\end{Bmatrix}
+B \ THEN
+\begin{Bmatrix}
+N\\ 
+BEGIN \ N \ [N] \ END
+\end{Bmatrix}
+\begin{bmatrix}
+ELSE \begin{Bmatrix}
+N\\ 
+BEGIN \ N \ [N] \ END
+\end{Bmatrix}
+\end{bmatrix}
+\] 
+
+% 1999 - 1MI - 7 - (3)
+\item
+Sljedeću gramatiku zapisanu u BNF notaciji prevedite u COBOL notaciju: \cite[str.~81-82]{udzbenik}
+
+\begin{alltt}
+<realni_broj> \(\to\) <brojka> | <brojka> <rb1> 
+<rb1> \(\to\) <brojka> | <brojka> <rb1> | . <rb2> | <rb3> 
+<rb2> \(\to\) <brojka> | <brojka> <rb2> | <rb3> 
+<rb3> \(\to\) E <rb4> | e <rb4> 
+<rb4> \(\to\) + <rb5> | - <rb5> | <rb5> 
+<rb5> \(\to\) <brojka> | <brojka> <rb5> 
+<brojka> \(\to\) 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
+\end{alltt} 
+
+% 2010 - P3MI-L - 6 - (3)
+% 2010 - P2MI-L - 6 - (3)
+% 2010 - P1MI-L - 6 - (3)
+\item
+Primjenom sustava oznaka BNF opišite konstante s pomičnom točkom.
+Na primjer, \texttt{-2.3e10}, \texttt{0.02} i \texttt{.2e-15} ispravno su zapisane konstante s pomičnom točkom. \cite[str.~81]{udzbenik}
+
+% 2009 - P1MI - 6 - (3)
+% 2009 - P2MI - 5 - (3)
+\item
+Primjenom sustava oznaka COBOL opišite konstante s pomičnim zarezom.
+Npr.~konstante oblika \texttt{-3.3e10}, \texttt{-02.0}. \cite[str.~82]{udzbenik}
+
+% 2010 - P3MI - 6 - (3)
+% 2010 - P2MI - 6 - (3)
+% 2010 - P1MI - 6 - (3)
+% AV - 3 - (3)
+\item
+BNF sustavom oznaka opišite BNF sustav oznaka.
+Za varijable koristite uniformni znak \texttt{VARIJABLA}, a za konstante uniformni znak \texttt{KONSTANTA}. \cite[str.~81]{udzbenik}
+
+% 2009 - 3MI - 7 - (3)
+\item
+BNF sustavom oznaka opišite niz naredbi definicije varijabli tipa \texttt{int} u programskom jeziku C.
+Dopuštena imena varijabli su \texttt{a}, \texttt{b} i \texttt{c}.
+Početne su vrijednosti varijabli opcionalne, a mogu biti isključivo dekadski brojevi.
+Primjer jednog niza naredbi je: \cite[str.~81]{udzbenik}
+
+\begin{alltt}
+int a, b=261;
+int c;
+int a=123;
+\end{alltt}
+
+% 2002 - 3MI - 1 - (3)
+\item
+Zadana je Co-No tablica.
+Odredite rezultat izvođenja zadanog programa. \cite[str.~83-84]{udzbenik} \cite{auditorne}
+
+\texttt{,7\(\to\)x,12\(\to\)y,x*y\(\to\)x,3\(\to\)z,x/z\(\to\)y,x-y/2\(\to\)x,x*2/y+z\(\to\)x,x*6-y+z*2-9*c\(\to\)y,x+y/2\(\to\)z,}
+
+\begin{tabular}{ | c | c | c | c | c | c | c | } \hline
+ & , & \(\to\) & * & / & + & - \\ \hline
+, & greška & dohvati & dohvati & dohvati & dohvati & dohvati  \\ \hline
+\(\to\) & spremi & greška & greška & greška & greška & greška \\ \hline
+* & greška & pomnoži & pomnoži & pomnoži & pomnoži & pomnoži \\ \hline
+/ & greška & podijeli & podijeli & podijeli & podijeli & podijeli \\ \hline
++ & greška & zbroji & zbroji & zbroji & zbroji & zbroji  \\ \hline
+- & greška & oduzmi & oduzmi & oduzmi & oduzmi & oduzmi \\ \hline
+\end{tabular}
+%aud/prim 7
+
+% 2003 - 1MI - 5 - (3)
+\item
+Primijenite zadanu Co-No tablicu u parsiranju sljedećeg niza: \texttt{,3+5*2\(\to\)R,6+2*3<R>18,}
+Odredite vrijednost koja se na kraju rada parsera nalazi u akumulatoru. \cite[str.~83-84]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{ | c | c | c | c | c | c | c | } \hline
+ & , & \(\to\) & $<$ & $>$ & + & * \\ \hline
+, &  & \#1 & \#1 & \#1 & \#1 & \#1  \\ \hline
+\(\to\) & \#2 & \#2 & \#2 & \#2 & \#2 & \#2 \\ \hline
+$<$ &  & \#3 &  & \#3 & \#3 & \#3 \\ \hline
+$>$ &  & \#4 &  & \#4 & \#4 & \#4 \\ \hline
++ &  & \#5 & \#5 & \#5 & \#5 & \#5  \\ \hline
+* &  & \#6 & \#6 & \#6 & \#6 & \#6 \\ \hline
+\end{tabular}
+
+\#1:	dohvati operand u akumulator \\
+\#2:	spremi vrijednost akumulatora u operand \\
+\#3:	ako je operand manji od akumulatora, stavi ga u akumulator \\
+\#4:	ako je operand veći od akumulatora, stavi ga u akumulator \\
+\#5:	pribroji operand akumulatoru \\
+\#6:	pomnoži akumulator s operandom
+%aud/prim 7
+
+% AV - 5 - (3)
+\item
+Zadanom Co-No tablicom parsirajte dva niza naredbi.
+Odredite prihvaća li se zadani niz zadanom Co-No tablicom, napišite generirani niz naredbi ciljnog programa i odredite vrijednosti varijabli \texttt{a}, \texttt{b} i \texttt{c} nakon izvođenja ciljnog programa.\\
+a) ; 4 \(\to\) a ; 5 \(\to\) b ; a + b * 10 \(\to\) c ; \\
+b) ; 5 \(\to\) c ; 3 \(\to\) d ; c * d ; c / d \(\to\) a ;
+
+Tablica sadrži akcije generatora ciljnog programa za stogovni stroj.
+Akcija \texttt{PUSH} stavlja na vrh stoga zadanu vrijednost ili vrijednost zadane verijable.
+Akcija \texttt{POP} skida podatak s vrha stoga i sprema ga u zadanu varijablu.
+Akcije \texttt{ADD}, \texttt{SUB}, \texttt{MUL} i \texttt{DIV} skidaju dva podatka s vrha stoga, izvode operaciju i stavljaju rezultat na vrh stoga. Akcija -- označava grešku u ulaznom nizu. \cite[str.~83-84]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{c c | c | c | c | c | c | c | }
+\cline{3-8}
+& & \multicolumn{6}{|c|}{Desni operator} \\ \cline{3-8}
+& & ; & + & - & * & / & \(\to\) \\ \cline{1-8}
+\multicolumn{1}{|c|}{} & ; & -- & \#1; & \#1; & \#1;  & \#1; & \#1;     \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & + & -- & \#1; \#2; & \#1; \#2; & \#1; \#2; & \#1; \#2; & \#1; \#2;    \\ \cline{2-8}
+\multicolumn{1}{|c|}{Lijevi} & - & -- & \#1; \#3; & \#1; \#3; & \#1; \#3; & \#1; \#3; & \#1; \#3; \\ \cline{2-8}
+\multicolumn{1}{|c|}{operator} & * & -- & \#1; \#4; & \#1; \#4; & \#1; \#4; & \#1; \#4; & \#1; \#4; \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & / & -- & \#1; \#5; & \#1; \#5; & \#1; \#5; & \#1; \#5; & \#1; \#5; \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & \(\to\) & \#6; & -- & -- & -- & -- & -- \\ \cline{1-8}
+\end{tabular}
+
+pri čemu su akcije u tablici:\\
+\#1: PUSH\\
+\#2: ADD\\
+\#3: SUB\\
+\#4: MUL\\
+\#5: DIV\\
+\#6: POP\\ 
+%aud/prim 7
+
+% 1999 - 1MI - 5 - (3)
+\item
+Primijenite zadanu Co-No tablicu u parsiranju sljedećeg niza: \texttt{,x+y+z>w*x\(\rightarrow\)u\(\rightarrow\)v+z\(\rightarrow\)R,}
+
+\begin{tabular}{c c | c | c | c | c | c | }
+\cline{3-7}
+& & \multicolumn{5}{|c|}{Desni operator} \\ \cline{3-7}
+& & , & $\to$ & $>$ & + & * \\ \cline{1-7}
+\multicolumn{1}{|c|}{} & , &  & \#1 & \#1 & \#1 & \#1  \\ \cline{2-7}
+\multicolumn{1}{|c|}{} & $\to$ & \#2 & \#2 & & &  \\ \cline{2-7}
+\multicolumn{1}{|c|}{Lijevi operator} & $>$ & & \#3 &  & \#3 & \#3 \\ \cline{2-7}
+\multicolumn{1}{|c|}{} & + &  & \#4 & \#4 & \#4 & \#4 \\ \cline{2-7}
+\multicolumn{1}{|c|}{} & * &  & \#5 & \#5 & \#5 & \#5 \\ \cline{1-7}
+\end{tabular}
+
+pri čemu su akcije u tablici:\\
+\#1: dohvati operand u akumulator \\
+\#2: spremi vrijednost akumulatora \\
+\#3: ako je operand veći od akumulatora, stavi ga u akumulator \\
+\#4: pribroji operand akumulatoru \\
+\#5: pomnoži akumulator s operandom \cite[str.~83-84]{udzbenik} \cite{auditorne}
+%aud/prim 7
+
+% 2000 - 1MI - 7 - (3)
+\item
+Zadana je Co-No tablica:
+
+\begin{tabular}{ c c | c | c | c | c | c | c | c | }
+\cline{3-8}
+& & \multicolumn{6}{|c|}{Desni operator} \\ \cline{3-8}
+& & , & \(\to\) & + & - & * & / \\ \cline{1-8}
+\multicolumn{1}{|c|}{} & , & greška & spremi & greška & greška & greška & greška \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & \(\to\) & dohvati & greška & zbroji & oduzmi & moži & dijeli \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & + & dohvati & greška & zbroji & oduzmi & moži & dijeli \\ \cline{2-8}
+\multicolumn{1}{|c|}{Lijevi operator} & - & dohvati & greška & zbroji & oduzmi & moži & dijeli \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & * & dohvati & greška & zbroji & oduzmi & moži & dijeli \\ \cline{2-8}
+\multicolumn{1}{|c|}{} & / & dohvati & greška & zbroji & oduzmi & moži & dijeli \\ \hline
+\end{tabular}
+
+Odredite vrijednosti varijabli \texttt{a}, \texttt{b} i \texttt{c} nakon izvođenja sljedećeg programa:
+
+\texttt{,1\(\to\)a,2\(\to\)b,3\(\to\)c,a*b+c\(\to\)c,c-1/a\(\to\)b,c+b*a\(\to\)a,a*7-b+3*a-c*4+7\(\to\)c,} \cite[str.~83-84]{udzbenik} \cite{auditorne}
+%aud/prim 7
+
+% 2001 - 1MI - 8 - (3)
+\item
+Napišite Co-No tablicu za parsiranje aritmetičkih nizova koji sadrže operacije \texttt{+}, \texttt{*}, \texttt{<} i \texttt{>}.
+Kao separator koristi se \texttt{,} (zarez), a za pohranu vrijednosti u akumulator koristi se znak \texttt{\(\to\)}.
+Operator \texttt{<} uspoređuje sadržaj akumulatora s operandom i u akumulator stavlja manji od njih.
+Analogno vrijedi i za operator \texttt{>}, s tim da se u akumulator stavlja veći od njih.
+Na primjer, za \texttt{2<3} u akumulatoru ostaje \texttt{2}, za \texttt{4<3} u akumulator se stavlja \texttt{3}, za \texttt{2>3} u akumulator se stavlja \texttt{3} te za \texttt{4>3} u akumulatoru ostaje \texttt{4}.
+Odredite vrijednost varijable \texttt{b} nakon parsiranja sljedećeg programa: \texttt{,1+2\(\to\)a,2*2<a>2\(\to\)b,}  \cite[str.~83-84]{udzbenik} \cite{auditorne}
+%aud/prim 7
+
+% 2004 - 3MI - 5 - (3)
+\item
+Izgradite tablicu relacija prednosti za zadanu operatorsku gramatiku. \cite[str.~133-135]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <A>a<S> | <B>
+<A> \(\to\) <B>c<D> | <D>d
+<B> \(\to\) b
+<D> \(\to\) c<S>a
+\end{alltt} 
+
+% 2007 - 3MI - 1 - (3)
+% 2000 - 2MI - 6 - (3)
+\item
+Na temelju zadane operatorske gramatike izgradite tablicu relacija prednosti. Prikažite parsiranje niza \( (a \vee a \wedge \lnot a) \vee \lnot a \wedge a \) pomoću izgrađene tablice. \cite[str.~133-135]{udzbenik}
+
+\begin{alltt}
+<E> \(\to\) <E> \(\wedge\) <T> | <T>
+<T> \(\to\) <T> \(\vee\) <P> | <P>
+<P> \(\to\) <N> | \(\lnot\)<N>
+<N> \(\to\) ( <E> )
+<N> \(\to\) a
+\end{alltt} 
+
+% 2010 - 2MI - 8 - (3)
+% 2009 - 2MI - 6 - (3)
+\item
+Binarni operator \texttt{\#} lijevo je asocijativan i manje prednosti od binarnog operatora \texttt{\$}.
+Operator \texttt{\$} desno je asocijativan.
+U izrazima je dopušteno korištenje okruglih zagrada, a varijable su označene završnim znakom \texttt{a}.
+Pripremite tablicu prednosti za parser zasnovan na prednosti operatora koji će parsirati opisane nizove. \cite[str.~135-136]{udzbenik}
+
+% 2001 - 2MI - 5 - (3)
+\item
+Odredite PRIMIJENI skupove svih produkcija u zadanoj gramatici.
+Odredite je li gramatika LL(1) i obrazložite. \cite[str.~100]{udzbenik}
+
+\begin{alltt} 
+<S> \(\to\) a<S>b<S> | c<D><A> | \(\varepsilon\)
+<A> \(\to\) <B>c | ba<B>
+<B> \(\to\) a<D> | de<C> | e<C>
+<C> \(\to\) <D>f | a<B>c
+<D> \(\to\) e<D> | \(\varepsilon\)
+\end{alltt} 
+
+% 2010 - 3MI - 7 - (3)
+\item
+Odredite PRIMIJENI skupove svih produkcija u zadanoj gramatici.
+Je li zadana gramatika tipa LL(1)? \cite[str.~100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<S> | b<X>
+<X> \(\to\) <Y> | a
+<Y> \(\to\) <S>a<X> | c | \(\varepsilon\)
+\end{alltt} 
+
+% 2009 - P2MI-L - 6 - (3)
+\item
+Odredite PRIMIJENI skupove svih produkcija u zadanoj gramatici.
+Je li zadana gramatika tipa LL(1)?
+Obrazložite odgovor. \cite[str.~100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<S>c<S><Z> | b<S>c<Y>c<S>
+<Y> \(\to\) a<Y><Z>c | cbb<Z>
+<Z> \(\to\) <S>a<Z> | c<Z>c<Y> | \(\varepsilon\)
+\end{alltt} 
+
+% 2009 - P2MI - 7 - (3)
+% 2002 - 1MI - 8 - (3)
+\item
+Odredite PRIMIJENI skupove svih produkcija u zadanoj gramatici.
+Je li zadana gramatika tipa LL(1)?
+Obrazložite odgovor. \cite[str.~100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <C>c<E> | b<A>b<B> | ded<A>a | \(\varepsilon\)
+<A> \(\to\) c<B>f | f<B>d | \(\varepsilon\)
+<B> \(\to\) <C>b | c<D> | \(\varepsilon\)
+<C> \(\to\) ad<C>d | e<E>c<D><A>d | \(\varepsilon\)
+<D> \(\to\) a<S>fe | b<B>de | \(\varepsilon\)
+<E> \(\to\) da<C> | e<A>e<S>fa
+\end{alltt} 
+
+% 2003 - 2MI - 3 - (3)
+\item
+Konstruirajte potisni automat za zadanu LL(1)-gramatiku te odredite koji su mogući ulazni nizovi ako su se tijekom parsiranja na vrhu stoga redom pojavili nezavršni znakovi \texttt{<S>} \texttt{<S>} \texttt{<A>} \texttt{<A>} \texttt{<B>} \texttt{<B>} (namjerno nije navedeno pojavljivanje završnih znakova na vrhu stoga). \cite[str.~99]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<S>c | b<A>d
+<A> \(\to\) <B> | b<A>d
+<B> \(\to\) e<B> | \(\varepsilon\)
+\end{alltt} 
+
+% 2003 - 1MI - 8 - (3)
+% 1999 - 2MI - 5 - (3)
+\item
+Odredite PRIMIJENI skupove za produkcije zadane gramatike (nije potrebno koristiti algoritam od 12 koraka).
+Odredite je li gramatika LL(1) i obrazložite odgovor. \cite[str.~100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A><S>b<C><D> | \(\varepsilon\)
+<A> \(\to\) c<A><S>e | \(\varepsilon\)
+<B> \(\to\) a<S>fc | cba<B> | \(\varepsilon\)
+<C> \(\to\) ab<C>d | c<C>e | \(\varepsilon\)
+<D> \(\to\) <A>a<B>f | d<B><D> | \(\varepsilon\)
+\end{alltt} 
+
+% 2000 - 2MI - 3 - (3)
+\item
+Odredite PRIMIJENI skupove za produkcije dane konteksno neovisne gramatike čiji je početni nezavršni znak \texttt{<A>}.
+Odredite kojeg tipa je ta gramatika i navedite uvjete koje ispunjavaju gramatike tog tipa. \cite[str.~85-115]{udzbenik}
+
+\begin{alltt}
+<A> \(\to\) a<E> | c | \(\varepsilon\)
+<B> \(\to\) b<C>b<A> | d
+<C> \(\to\) a<B>e | b | d<A>b<D>
+<D> \(\to\) c<C>f | \(\varepsilon\)
+<E> \(\to\) a<D>a | c<B>f
+\end{alltt} 
+
+% AV - 4 - (3)
+\item 
+Zadanu gramatiku pretvorite u S-gramatiku. \cite[str.~85]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A>b | b<A>c | c<B>a
+<A> \(\to\) d | \(\varepsilon\)
+<B> \(\to\) <B>c | g
+\end{alltt} 
+%aud/prim 6
+
+% 2002 - 1MI - 6 - (3)
+\item
+Zadanu gramatiku pretvorite u S-gramatiku. \cite[str.~85]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <C> | a<A>c | b<B>a
+<A> \(\to\) ab<A> | bac<A> | \(\varepsilon\)
+<B> \(\to\) <C>c | bc<B> | \(\varepsilon\)
+<C> \(\to\) cab | cba
+\end{alltt} 
+%aud/prim 6
+
+% 2009 - P1MI - 10 - (3)
+% 2009 - P2MI-E - 3 - (3)
+% 2010 - P3MI - 10 - (3)
+\item
+Zadanu gramatiku pretvorite u S-gramatiku koja generira isti jezik. \cite[str.~85]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <C> | a<A>c | b<B>a
+<A> \(\to\) ab<A> | bac<A> | \(\varepsilon\)
+<B> \(\to\) <C>c | bc<B> | \(\varepsilon\)
+<C> \(\to\) cab | cba
+\end{alltt} 
+%aud/prim 6
+
+% 2009 - 3MI - 8 - (3)
+\item
+Pretvorite zadanu gramatiku u S-gramatiku.
+Provedite i postupak pojednostavljenja dobivene gramatike. \cite[str.~85]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) ab<A>
+<A> \(\to\) <B>bc | cb<A>
+<B> \(\to\) a<S>a | cc<B>b | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 6
+
+% 2010 - P2MI-L - 9 - (3)
+\item
+Za zadanu kontekstno neovisnu gramatiku konstruirajte istovjetnu gramatiku koja nema \(\varepsilon\)-produkcija i u kojoj desna strana svake produkcije započinje završnim znakom. \cite[str.~85]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<A> \(\to\) a<B>a | ac<B>c
+<B> \(\to\) <B>a | a<A> | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 6
+
+% 2007 - 1MI - 10 - (3)
+\item
+Zadanu gramatiku pretvorite u Q-gramatiku i pokažite da dobivena gramatika zadovoljava pravila Q-gramatike. \cite[str.~91-95]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <A>c<D> | c
+<A> \(\to\) <B>a | b<D>c
+<B> \(\to\) <C>e | ef<A>
+<C> \(\to\) <B> | a
+<D> \(\to\) a<D> | b
+\end{alltt} 
+
+% 2004 - 1MI - 10 - (3)
+\item
+Zadanu Q-gramatiku pretvorite u S-gramatiku. \cite[str.~85-95]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A><C>c | b<B><A>a
+<A> \(\to\) d<C> | \(\varepsilon\)
+<B> \(\to\) f | \(\varepsilon\)
+<C> \(\to\) e<B>
+\end{alltt} 
+
+% 2009 - P3MI - 3 - (3)
+% 2003 - 2MI - 5 - (3)
+\item
+Zadanu gramatiku pretvorite u LL(1)-gramatiku koja generira isti jezik: \cite[str.~107-111]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <S>ca | a<A>c | ab<S>b
+<A> \(\to\) c<A>c | d<B>ac | db<A>c
+<B> \(\to\) baa<B> | bbc<B> | d
+\end{alltt} 
+
+% 1999 - 3MI - 4 - (3)
+\item 
+Zadanu LL(1)-gramatiku prevedite u Q-gramatiku, uz pretpostavku da su \texttt{kon} i \texttt{var} završni znakovi. \cite[str.~91-98]{udzbenik}
+
+\begin{alltt}
+<E> \(\to\) <E>+<T> | <T>
+<T> \(\to\) <P> | <T>*<P>
+<P> \(\to\) (<E>) | kon | var
+\end{alltt} 
+
+% AV - 9 - (3)
+\item
+Za zadanu gramatiku izgradite parser zasnovan na tehnici parsiranja \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) b<A> | p<A>m<C>
+<A> \(\to\) d<S>a | e
+<C> \(\to\) d<A>
+\end{alltt} 
+%aud/prim 11
+
+% 2009 - 1MI - 10 - (3)
+% 2010 - P1MI-L - 10 - (3)
+\item
+Odredite tip zadane gramatike i konstruirajte potisni automat parsera od vrha prema dnu.  \cite[str.~84-100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A>b<B> | b<B><A>
+<A> \(\to\) a<C>
+<B> \(\to\) b<A> | \(\varepsilon\)
+<C> \(\to\) cc
+\end{alltt}
+
+% 2009 - 2MI - 8 - (3)
+\item
+Za zadanu gramatiku izgradite parser zasnovan na tehnici \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) ab<A>
+<A> \(\to\) ab<B> | bb
+<B> \(\to\) c
+\end{alltt} 
+%aud/prim 11
+
+% 2007 - 2MI - 3 -(3)
+\item
+Za zadanu gramatiku konstruirajte parser zasnovan na tehnici \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) aba<S>q<W> | baf<Y>
+<W> \(\to\) cc<S> | q
+<Y> \(\to\) caba<W> | ffa<S>q<W>
+\end{alltt} 
+%aud/prim 11
+
+% 2003 - 2MI - 9 - (3)
+\item 
+Za zadanu gramatiku konstruirajte parser od dna prema vrhu metodom \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<S><A><B> | b<B>
+<A> \(\to\) bad | c<A><B>e
+<B> \(\to\) ab | d<A>e
+\end{alltt} 
+%aud/prim 11
+
+% 2010 - P2MI - 7 - (3)
+\item
+Za zadanu Q-gramatiku konstruirajte potisni automat. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) ffg<A><B>
+<A> \(\to\) f<C>ae<A><B> | \(\varepsilon\)
+<B> \(\to\) ga<A>
+<C> \(\to\) ee | g<S>
+\end{alltt}
+%aud/prim 9
+
+% 2007 - 1MI - 3 - (3)
+\item
+Konstruirajte potisni automat za zadanu gramatiku. \cite[str.~94-95]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<B><A>b | b<A><B>c
+<A> \(\to\) ba<B>ba | bb<B>bb | c<B>c
+<B> \(\to\) a<B>a | \(\varepsilon\)
+\end{alltt} 
+
+% 2003 - 1MI - 10 - (3)
+\item
+Konstruirajte potisni automat koji prihvaća nizove koje generira zadana gramatika. \cite[str.~98-99]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A>b<B>c | b<B>a<A>a
+<A> \(\to\) <A>c<B>a | <B>a | a
+<B> \(\to\) <B>b | b
+\end{alltt} 
+
+% 2004 - 1MI - 6 - (3)
+% AV - 7 - (3)
+\item
+Konstruirajte potisni automat za zadanu Q-gramatiku. \cite[str.~94-95]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A><B>c | c<B><A>b
+<A> \(\to\) a<A> | \(\varepsilon\)
+<B> \(\to\) b<B> | c
+\end{alltt} 
+%aud/prim 9
+
+% 2001 - 3MI - 3 - (3)
+\item
+Konstruirajte jednostavni potisni automat za navedenu LL(1)-gramatiku.
+Automat prikažite u tabličnom obliku. \cite[str.~99]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <B><B>b | cba<A> | \(\varepsilon\)
+<A> \(\to\) ca<B> | dc<A>a
+<B> \(\to\) a<A><S>d | b<S>d
+\end{alltt} 
+
+% 2009 - P1MI - 9 - (3)
+% 2010 - P3MI-L - 7 - (3)
+% 2010 - P2MI-L - 7 - (3)
+\item
+Prikažite stanje stoga i položaj glave za čitanje ulazne trake tijekom parsiranja niza abca primjenom zadanog potisnog automata.
+Koje je akcije potisnog automata potrebno pridružiti ćeliji s oznakom \texttt{X} da bi niz \texttt{abca} bio prihvatljiv? 
+Obrazložite odgovor. \cite[str.~90]{udzbenik}
+
+\begin{tabular}{|c|c|c|c|c|} \hline
+ & a & b & c & $\perp$ \\ \hline
+S & \#1 & \#2 & - & - \\ \hline
+A & - & - & \#3 & - \\ \hline
+B & X & - & - & - \\ \hline
+b & - & \#5 & - & - \\ \hline
+$\bigtriangledown$ & - & - & - & \#6 \\ \hline
+\end{tabular}
+
+\#1:	ZAMIJENI(Ab); POMAKNI; \\
+\#2:	ZAMIJENI(B); POMAKNI; \\
+\#3:	ZAMIJENI(B); POMAKNI; \\
+\#5:	IZVUCI; POMAKNI; \\
+\#6:	PRIHVATI; \\
+-:	ODBACI; \\
+
+% 2010 - 1MI - 10 - (3)
+\item
+Neka je zadana sljedeća S-gramatika:
+
+\begin{alltt}
+<S> \(\to\) ab<R> | b<R>b<S>
+<R> \(\to\) a | b<R>
+\end{alltt}
+
+te neka je zadana sljedeća tablica prijelaza potisnog automata:
+
+\begin{tabular}{|c|c|c|c|} \hline
+ & a & b & $\perp$ \\ \hline
+$<$S$>$ & (1) & (2) & Prihvati \\ \hline
+$<$R$>$ & (3) & (4) & - \\ \hline
+b & - & (3) & - \\ \hline
+$\bigtriangledown$ & - & - & - \\ \hline
+\end{tabular}
+\\
+(1) Zamijeni($<$R$>$ b a); Pomakni; \\
+(2) Zamijeni($<$S$>$ b $<$R$>$ b); Pomakni; \\
+(3) Izvuci; Pomakni; \\
+(4) Zamijeni($<$R$>$); \\
+(-) Odbaci;
+
+Utvrdite prihvaća li potisni automat s navedenom tablicom prijelaza jezik zadan navedenom S-gramatikom.
+Ako ne, navedite potrebne izmjene u tablici kako bi potisni automat prihvaćao jezik. \cite[str.~85-89]{udzbenik}
+
+% 2002 - 1MI - 10 - (3)
+\item
+Odredite produkcije i vrstu gramatike na temelju koje je konstruiran sljedeći potisni automat. \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{| c | c | c | c | c | }
+\hline
+ & a & b & c & $\perp$ \\ \hline
+S & 1 & 2 & 3 & 8 \\ \hline
+A & 2 & 4 & 8 & 4 \\ \hline
+B & 5 & 4 & 6 & 8 \\ \hline
+b & 8 & 7 & 8 & 8 \\ \hline
+$\bigtriangledown$ & 8 & 8 & 8 & 9 \\ \hline
+\end{tabular}
+
+1: zamijeni (cA);	pomakni \\
+2: zamijeni (S);	pomakni \\
+3: zamijeni (bB);	pomakni \\
+4: izvuci;	zadrži \\
+5: zamijeni (AbB);	pomakni \\
+6: zamijeni (SS);	pomakni \\
+7: izvuci;	pomakni \\
+8: odbaci \\
+9: prihvati \\
+%aud/prim 10
+
+% 2001 - 2MI - 8 - (3)
+\item
+Odredite gramatiku na temelju koje je konstruiran sljedeći potisni automat. \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{| c | c | c | c | c | c | } \hline
+ & 1 & 2 & 3 & 4 & $\perp$ \\ \hline
+$<$S$>$ & 1 & 2 & 7 & 1 & 2 \\ \hline
+$<$A$>$ & 3 & 7 & 7 & 4 & 7 \\ \hline
+$<$B$>$ & 7 & 5 & 7 & 7 & 7 \\ \hline
+$<$C$>$ & 7 & 7 & 7 & 6 & 7 \\ \hline
+$\bigtriangledown$ & 7 & 7 & 7 & 7 & 8 \\ \hline
+\end{tabular}
+
+1: zadrži; zamijeni (2B1A) \\
+2: zadrži; izvuci \\
+3: pomakni; zamijeni (A) \\
+4: zadrži; zamijeni (C) \\
+5: pomakni; izvuci \\
+6: pomakni; zamijeni (2S) \\
+7: odbaci \\
+8: prihvati \\
+%aud/prim 10
+
+% 2004 - 2MI - 5 - (3)
+\item
+Napišite gramatiku na temelju koje je nastao zadani potisni automat i odredite tip gramatike. \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{ | c | c | c | c | c | c | c | } \hline
+ & a & b & c & d & e & $\perp$ \\ \hline
+$<$S$>$ & 9 & 9 & 9 & 9 & 4 & 9 \\ \hline
+$<$A$>$ & 9 & 9 & 9 & 9 & 5 & 9 \\ \hline
+$<$B$>$ & 9 & 9 & 9 & 9 & 6 & 9 \\ \hline
+$<$C$>$ & 1 & 1 & 9 & 9 & 7 & 7 \\ \hline
+$<$D$>$ & 9 & 9 & 9 & 9 & 3 & 9 \\ \hline
+$<$E$>$ & 7 & 7 & 2 & 2 & 7 & 7 \\ \hline
+e & 9 & 9 & 9 & 9 & 8 & 9  \\ \hline
+$\bigtriangledown$ & 9 & 9 & 9 & 9 & 9 & 10 \\ \hline
+\end{tabular}
+\\
+
+ 1: zamijeni ($<$C$>$$<$B$>$); pomakni \\
+ 2: zamijeni ($<$E$>$$<$D$>$); pomakni \\
+ 3: zamijeni (e$<$A$>$);   pomakni \\
+ 4: zamijeni ($<$A$>$);    zadrži \\
+ 5: zamijeni ($<$C$>$$<$B$>$); zadrži \\
+ 6: zamijeni ($<$E$>$$<$D$>$); zadrži \\
+ 7: izvuci;            zadrži \\
+ 8: izvuci;            pomakni \\
+ 9: odbaci \\
+10: prihvati \\
+%aud/prim 10
+
+% 1999 - 1MI - 10 - (3)
+% 2010 - 2MI - 7 - (3)
+\item
+Rekonstruirajte gramatiku iz koje je nastao sljedeći potisni automat \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{|c|c|c|c|c|c|c|} \hline
+& ( & ) & + & * & konst & $\perp$ \\ \hline
+$<$E$>$ & 1 & 2 & 2 & 2 & 3 & 2 \\ \hline
+$<$T$>$ & 2 & 2 & 4 & 5 & 2 & 5 \\ \hline
+$<$P$>$ & 2 & 6 & 2 & 4 & 2 & 6 \\ \hline
+) & 2 & 7 & 2 & 2 & 2 & 2 \\ \hline
+$\bigtriangledown$ & 2 & 2 & 2 & 2 & 2 & 8 \\ \hline
+\end{tabular}
+
+1: Zamijeni($<$T$>$)$<$E$>$); Pomakni; \\
+2: Odbaci; \\
+3: Zamijeni($<$T$>$); Pomakni; \\
+4: Zamijeni($<$E$>$); Pomakni; \\
+5: Zamijeni($<$P$>$); Zadrži; \\
+6: Izvuci; Zadrži; \\
+7: Izvuci; Pomakni; \\
+8: Prihvati; \\
+%aud/prim 10
+
+% AV - 8 - (3)
+\item
+Odredite produkcije gramatike na temelju koje je konstruiran sljedeći potisni automat. \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{|c|c|c|c|c|} \hline
+ & a & b & c & $\perp$ \\ \hline
+S & \#1 & \#2 & \#3 & \#8 \\ \hline
+A & \#2 & \#4 & \#8 & \#4 \\ \hline
+B & \#5 & \#4 & \#6 & \#8 \\ \hline
+b & \#8 & \#7 & \#8 & \#8 \\ \hline
+$\bigtriangledown$ & \#8 & \#8 & \#8 & \#9 \\ \hline
+\end{tabular}
+
+\#1: Zamijeni (A); Pomakni; \\
+\#2: Zamijeni (S); Pomakni; \\
+\#3: Zamijeni (bB); Pomakni; \\
+\#4: Izvuci; Zadrži; \\
+\#5: Zamijeni (AbB); Pomakni; \\
+\#6: Zamijeni (SS); Pomakni; \\
+\#7: Izvuci; Pomakni; \\
+\#8: Odbaci; \\
+\#9: Prihvati; \\
+%aud/prim 10
+
+% 2007 - 2MI - 10 - (3)
+\item
+Nacrtajte DKA na temelju kojeg je izgrađen zadani LR-parser.
+Pomoću zadanog LR-parsera parsirajte niz: \texttt{cbacbaba}. \cite[str.~140-144]{udzbenik}
+
+\begin{tabular}{| c || c | c | c | c || c | c | c | } \hline
+& \multicolumn{4}{|c||}{Akcija} & \multicolumn{3}{|c|}{Novo stanje} \\ \hline
+& a & b & c & $\perp$ & S & A & B \\ \hline
+0 & & & p3 & & & s1 & \\ \hline
+1 & & p2 & & & & & \\ \hline
+2 & & & & r1 & & & \\ \hline
+3 & & p4 & & & & & \\ \hline
+4 & p7 & & p6 & & & & s5 \\ \hline
+5 & & r2 & & & & & \\ \hline
+6 & & r3 & & & & & \\ \hline
+7 & & & & & s8 & & \\ \hline
+8 & & p9 & & & & & \\ \hline
+9 & & r4 & & & & & \\ \hline
+\end{tabular}
+
+pX	= Pomakni (X); \\
+r1	= Reduciraj (S \(\to\) Ab); Prihvati (); \\
+r2	= Reduciraj (A \(\to\) cbB); \\
+r3	= Reduciraj (B \(\to\) c); \\
+r4	= Reduciraj (S \(\to\) aAb); \\
+sX	= Stavi (X); \\ 
+
+% AV - 10 - (3)
+\item
+Prikažite korake tijekom parsiranja niza \texttt{bbbcb} primjenom zadanog LR(1)-parsera. \cite[str.~141-144]{udzbenik} \cite{auditorne}\\
+
+\begin{tabular}{| c || c | c | c || c | c | c | } \hline
+Stanje & \multicolumn{3}{|c||}{Akcija} & \multicolumn{3}{|c|}{Novo stanje} \\ \hline
+& b & c & $\perp$ & $<$S$>$ & $<$A$>$ & $<$B$>$ \\ \hline
+0 & P1 & & & & & \\ \hline
+1 & P2 & & & & S3 & \\ \hline
+2 & P5 & & & & & S6 \\ \hline
+3 & P4 & & & & & S7 \\ \hline
+4 & & & R3 & & & \\ \hline
+5 & & R3 & & & & \\ \hline
+6 & & P8 & & & & \\ \hline
+7 & & & Prihvati & & & \\ \hline
+8 & R2 & & & & & \\ \hline
+\end{tabular}
+
+\begin{alltt}
+R1 = Reduciraj ( <S> \(\to\) b <A> <B> )
+R2 = Reduciraj ( <A> \(\to\) b <B> c )
+R3 = Reduciraj ( <B> \(\to\) b )
+\end{alltt}
+%aud/prim 12
+
+% 2003 - 2MI - 7 - (3)
+\item
+Izgradite SLR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <S><S>* | <S><S>+ | c | v
+\end{alltt} 
+%aud/prim 13
+
+% 2007 - 3MI - 4 -(3)
+\item
+Za zadanu gramatiku konstruirajte SLR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) m | q<P>
+<P> \(\to\) <Q><P>
+<Q> \(\to\) b
+\end{alltt} 
+%aud/prim 13
+
+% 2002 - 2MI - 4 - (3)
+\item
+Konstruirajte SLR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <A>c<C>e
+<A> \(\to\) a<B> | b<B>
+<B> \(\to\) <A> | \(\varepsilon\)
+<C> \(\to\) df<C> | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 13
+
+% 2000 - 2MI - 10 - (3)
+\item
+Za zadanu gramatiku konstruirajte SLR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\noindent
+\begin{alltt}
+<S> \(\to\) <A><B> | a<S>
+<A> \(\to\) a<A>a | ac
+<B> \(\to\) b<A>
+\end{alltt} 
+%aud/prim 13
+
+% 2001 - 2MI - 6 - (3)
+\item
+Konstruirajte SLR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\noindent
+\begin{alltt} 
+<S> \(\to\) <B>a | a<A><S>
+<A> \(\to\) <A>c | cb
+<B> \(\to\) a<S>b | b<A>
+\end{alltt} 
+%aud/prim 13
+
+% AV - 11 - (3)
+\item
+Za zadanu gramatiku izgradite SLR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A>c
+<A> \(\to\) x<S> | \(\varepsilon\)
+\end{alltt}
+%aud/prim 13
+
+% 1999 - 2MI - 9 - (3)
+\item 
+Konstruirajte SLR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <B> | a<B>b<A>
+<A> \(\to\) <B>b<A> | c
+<B> \(\to\) d | e<S><C>
+<C> \(\to\) f<S> | \(\varepsilon\)
+\end{alltt}
+%aud/prim 13
+
+% 2009 - P2MI-E - 5 - (3)
+% 2009 - P2MI - 10 - (3)
+% 2010 - 2MI - 10 - (3)
+\item
+Izgradite SLR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <A>a<B>b
+<A> \(\to\) a
+<B> \(\to\) c<A> | \(\varepsilon\)
+\end{alltt}
+%aud/prim 13
+
+% 2004 - 2MI - 7 - (3)
+\item
+Za zadanu gramatiku izgradite SLR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <B><A>
+<A> \(\to\) <B>b<A> | a<B> | b
+<B> \(\to\) c<A>
+\end{alltt} 
+%aud/prim 13
+
+% 2002 - 3MI - 3 - (3)
+\item
+Izgradite LR(0)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <S>a<S> | b<S>c | d
+\end{alltt}
+%aud/prim 13
+
+% 2003 - 3MI - 7 - (3)
+\item
+Konstruirajte LR(1)-parser za zadanu gramatiku. \cite[str.~147-152]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A>b<A> | ba<A>
+<A> \(\to\) a<A> | \(\varepsilon\)
+\end{alltt}
+%aud/prim 14
+
+% 2009 - 2MI - 10 - (3)
+\item
+Izgradite LR(1)-parser za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) b<A>
+<A> \(\to\) <S>a | \(\varepsilon\)
+\end{alltt}
+%aud/prim 13
+
+% 2009 - P2MI-L - 10 - (3)
+\item
+Za zadanu gramatiku izgradite LR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) <S>a | a<A>b
+<A> \(\to\) ab<A> | b<B><B>
+<B> \(\to\) <A><B> | ab
+\end{alltt}
+%aud/prim 13
+
+% AV - 12 - (3)
+\item
+Za zadanu gramatiku izgradite LR(1)-parser. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) b<A><B>
+<A> \(\to\) b<B>c
+<B> \(\to\) b
+\end{alltt}
+%aud/prim 13
+
+% 2001 - 3MI - 1 - (3)
+\item
+Konstruirajte kanonski LR-parser (LR(1)) za zadanu gramatiku. \cite[str.~139-147]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) a<A>c | b<A>d
+<A> \(\to\) a<A> | b<A> | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 13
+
+% 2010 - P2MI - 10 - (3)
+% 2010 - P3MI - 9 - (3)
+\item
+Izgradite LALR(1)-parser za zadanu gramatiku.  \cite[str.~155-156]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <A>a<B>b
+<A> \(\to\) a
+<B> \(\to\) c<A> | \(\varepsilon\)
+\end{alltt}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Semantička analiza}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 1999 - 3MI - 7 - (4)
+\item 
+Proširite sljedeću gramatiku svojstvima i akcijskim znakovima tako da se dobije L-atributna prijevodna gramatika koja će računati dekadsku vrijednost rimskih brojeva.
+Početni znak gramatike \texttt{<S>} neka ima samo jedno i to izvedeno svojstvo.
+Konstruirajte potisni automat za dobivenu gramatiku. \cite[str.~180-195]{udzbenik} \cite{auditorne}
+
+\noindent
+\begin{alltt}
+<S> \(\to\) V<A> | I<B>
+<A> \(\to\) I<C> | \(\varepsilon\)
+<B> \(\to\) V | I<D> | \(\varepsilon\)
+<C> \(\to\) I<D> | \(\varepsilon\)
+<D> \(\to\) I | \(\varepsilon\)
+\end{alltt}
+%aud/prim 15,16
+
+% 2001 - 3MI - 5 - (4)
+\item
+Zadana je gramatika koja generira aritmetičke izraze čiji su operandi razlomci zapisani u obliku \texttt{brojnik:nazivnik}.
+Pretvorite zadanu gramatiku u LL(1)-gramatiku.
+Dobivenu gramatiku proširite svojstvima i akcijskim znakovima tako da se dobije L-atributna gramatika koja izračunava i potom ispisuje vrijednost aritmetičkog izraza.
+Definirajte akcijske znakove pomoću: cjelobrojnog dijeljenja, množenja i zbrajanja, funkcije \texttt{zajnaz} koja izračunava zajednički nazivnik i funkcije \texttt{ispis} koja ispisuje razlomak.
+
+\begin{alltt}
+<S> \(\to\) <E>
+<E> \(\to\) <E>+<T> | <T>
+<T> \(\to\) <P> | <T>*<P>
+<P> \(\to\) (<E>) | broj:broj
+\end{alltt}
+
+Znak \texttt{:} nije operator dijeljenja, već specijalni znak koji odvaja brojnik od nazivnika.
+U produkcijama je \texttt{broj} završni znak koji predstavlja cijeli broj.
+Niti u jednom trenutku razlomak se ne smije pretvoriti u realni broj, već se tijekom izračunavanja vrijednosti izraza razlomci promatraju kao par cjelobrojnih vrijednosti (brojnik i nazivnik). \cite[str.~107-111, 180-183]{udzbenik} \cite{auditorne}
+%aud/prim 15
+
+% 2002 - 2MI - 6 - (4)
+\item
+Zadana je L-atributna gramatika koja izračunava vrijednost jednostavnih izraza koji se sastoje od operacija zbrajanja i množenja.
+Završni znak broj cjelobrojna je konstanta čije svojstvo odgovara vrijednosti dekadskog broja. \cite[str.~180-198]{udzbenik} \cite{auditorne}
+
+a) odredite nasljedna i izvedena svojstva te odrediti redoslijed računanja svojstava i domene za računanje svojstava svake produkcije,
+
+b) definirajte akcije potisnog automata i pokazati promjene na stogu potisnog automata za ulazni niz \texttt{6+2*4},
+
+c) napišite parser metodom rekurzivnog spusta; trenutni znak na ulazu je pohranjen u globalnu varijablu znak, a sljedeći znak se u tu varijablu čita pozivom globalne funkcije \texttt{noviznak()}; pretpostaviti da za izvođenje akcijskih znakova već postoje odgovarajući potprogrami: \texttt{Zbroji()} i \texttt{Pomnozi()}.
+
+\begin{tabular}{ l l }
+
+\(S_{a} \to U_{b} T_{c,d}\) & \(c \leftarrow b, a \leftarrow d \) \\
+\(T_{a,b} \to + U_{c} \{Zbroji\}_{d,e,f} T_{g,h} \) & \( d \leftarrow a, e \leftarrow c, g \leftarrow f, b \leftarrow h \) \\
+\(T_{a,b} \to \varepsilon \) & \( b \leftarrow a \) \\
+\(U_{a} \to P_{b} V_{c,d} \) & \( c \leftarrow b, a \leftarrow d \) \\
+\(V_{a,b} \to * P_{c} \{Pomnozi\}_{d,e,f} V_{g,h} \) & \( d \leftarrow a, e \leftarrow c, g \leftarrow f, b \leftarrow h \) \\
+\(V_{a,b} \to \varepsilon \) & \( b \leftarrow a \) \\
+\(P_{a} \to ( S_{b} ) \) & \( a \leftarrow b \) \\
+\(P_{a} \to broj_{b} \) & \( a \leftarrow b \) \\
+
+\end{tabular}
+%aud/prim 15,16
+
+% 2002 - 3MI - 7 - (4)
+\item
+Zadanu gramatiku koja prihvaća oktalne brojeve s pomičnim zarezom proširite svojstvima i akcijskim znakovima koji će izračunati dekadsku vrijednost pročitanog broja (također s pomičnim zarezom).
+Pretpostavite da završni znak \texttt{znamenka} ima jedno svojstvo koje je izvedeno i predstavlja vrijednost oktalne znamenke (\texttt{0}--\texttt{7}). \cite[str.~177-180]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S> \(\to\) znamenka <A> . <B>
+<A> \(\to\) znamenka <A> | \(\varepsilon\)
+<B> \(\to\) znamenka <B> | \(\varepsilon\)
+\end{alltt} 
+%aud/prim 15
+
+% 2003 - 3MI - 1 - (4)
+\item
+Odredite koja su izvedena, a koja nasljedna svojstva te redoslijed računanja svojstava za sve produkcije zadane L-atributne gramatike. \cite[str.~173-181]{udzbenik}
+
+\begin{tabular}{ ll } 
+
+\( S_{a,b} \to x_{c} A_{d,e} \{Akc1\}_{f,g} B_{h,i,j} z_{k} \{Akc2\}_{m,n,o} \) & d \(\leftarrow\) a, e \(\leftarrow\) c, f \(\leftarrow\) c, h \(\leftarrow\) g, \\ & m \(\leftarrow\) i, b \(\leftarrow\) i, n \(\leftarrow\) j, o \(\leftarrow\) k \\
+\( A_{a,b} \to y_{c} z_{d} A_{e,f} \{Akc3\}_{g,h} \) & e \(\leftarrow\) a, f \(\leftarrow\) c, g \(\leftarrow\) b, h \(\leftarrow\) d \\
+\( A_{a,b} \to A_{c,d} z_{e} \{Akc3\}_{f,g} \) & c \(\leftarrow\) a, d \(\leftarrow\) b, f \(\leftarrow\) d, g \(\leftarrow\) e \\
+\( A_{a,b} \to x_{c} B_{d,e,f} x_{g} \{Akc4\}_{h,i,j,k,m} \) & d \(\leftarrow\) a, h \(\leftarrow\) b, i \(\leftarrow\) c, j \(\leftarrow\) e, k \(\leftarrow\) f, m \(\leftarrow\) g \\
+\( B_{a,b,c} \to z_{d} x_{e} B_{f,g,h} \{Akc5\}_{i,j,k,m} \) & f \(\leftarrow\) e, i \(\leftarrow\) a, j \(\leftarrow\) d, k \(\leftarrow\) g, b \(\leftarrow\) h, c \(\leftarrow\) m \\
+\( B_{a,b,c} \to y_{d} \{Akc6\}_{e,f,g} y_{h} \{Akc6\}_{i,j,k} y_{m} \) & e \(\leftarrow\) a, f \(\leftarrow\) d, i \(\leftarrow\) g, j \(\leftarrow\) h, b \(\leftarrow\) m, c \(\leftarrow\) k \\
+\( B_{a,b,c} \to S_{d,e} x_{f} \{Akc6\}_{g,h,i} \) & d \(\leftarrow\) a, g \(\leftarrow\) e, h \(\leftarrow\) f, b \(\leftarrow\) e, c \(\leftarrow\) i \\
+\end{tabular} 
+
+% 2004 - 2MI - 9 - (4)
+\item
+Za zadanu L-atributnu gramatiku napišite parser zasnovan na rekurzivnom spustu.
+Koristite pseudokôd sličan programskom jeziku C.
+U kôdu koristite reference umjesto pokazivača te zanemariti deklaracije varijabli.
+Pretpostavite da su izlazne akcije već ostvarene kao zasebni potprogrami.
+Na raspolaganju su još i globalna varijabla \texttt{proc\_znak} u kojoj je pohranjen zadnji pročitani ulazni znak, potprogram \texttt{slij\_znak()} koji učitava sljedeći ulazni znak te potprogram \texttt{greska()} koji zaustavlja parsiranje i ispisuje poruku o grešci. \cite[str.~195-198]{udzbenik}
+
+\begin{tabular}{ll} 
+\( S_{s} \to \{Zbroji\}_{a,b,c} [ L_{d,e} ] \{Ispisi\}_{f,g} \)  &  s\(\leftarrow\)1 a\(\leftarrow\)s b\(\leftarrow\)1 e\(\leftarrow\)c f\(\leftarrow\)d g\(\leftarrow\)c \\
+\( L_{a,b} \to \{Oduzmi\}_{c,d,e} [ L_{f,g} ] \{Ispisi\}_{h,i} \)  &  a\(\leftarrow\)0 c\(\leftarrow\)b d\(\leftarrow\)-1 g\(\leftarrow\)e h\(\leftarrow\)f i\(\leftarrow\)e \\
+\(L_{a,b} \to X_{c} L_{d,e} \{Oduzmi\}_{f,g,h} \)  &  a\(\leftarrow\)h e\(\leftarrow\)b f\(\leftarrow\)d g\(\leftarrow\)c \\
+\(L_{a,b} \to \varepsilon \)  &  a\(\leftarrow\)0 \\
+\(X_{a} \to a \) &  a\(\leftarrow\)-1 \\
+\end{tabular} 
+
+% 2009 - P2MI-E - 4 - (4)
+% 2009 - P3MI - 6 - (4)
+% 2009 - P2MI-L - 9 - (4)
+% 2010 - 2MI - 9 - (4)
+% 2009 - P2MI - 9 - (4)
+\item
+U pseudokodu sličnom jeziku C napišite parser zasnovan na metodi rekurzivnog spusta za zadanu gramatiku. \cite[str.~195-198]{udzbenik}
+
+\begin{tabular}{ll} 
+\( <S> \to a_{p} <B>_{q, r} <A>_{x, y} b_{z} \{Ispisi_{w}\} \) & \( q \leftarrow p + 3, x \leftarrow r, w \leftarrow z + y \times p \) \\
+\( <A>_{p,q} \to \varepsilon	 \) & \( q \leftarrow p \% 3 \) \\
+\( <B>_{p, q} \to a_{r} <A>_{x, y} b_{z} \)& \(x \leftarrow p, q \leftarrow y \times z + r \) \\
+\end{tabular} 
+
+% 2007 - 2MI - 2 - (3)
+\item
+Navedite sve ulazne nizove za koje zadana gramatika generira sljedeći niz izlaznih završnih znakova: \verb|{|x\verb|}|\verb|{|q\verb|}|\verb|{|b\verb|}|\verb|{|q\verb|}|\verb|{|w\verb|}|\verb|{|a\verb|}|. Za svaki ulazni niz nacrtajte sintaksno stablo. \cite[str.~171]{udzbenik}
+
+\begin{alltt}
+<S>	\(\to\)	b \verb|{|z\verb|}| a<A> | <A> \verb|{|w\verb|}| b \verb|{|a\verb|}| a
+<A>	\(\to\)	\verb|{|x\verb|}| <B>c<B><A> \verb|{|q\verb|}| | c \verb|{|y\verb|}| \verb|{|z\verb|}| a <A> b \verb|{|p\verb|}| | a
+<B>	\(\to\)	<B> a \verb|{|q\verb|}| c b \verb|{|b\verb|}| <A> | b a \verb|{|q\verb|}| <A> c \verb|{|b\verb|}| | c
+\end{alltt} 
+
+% 2004 - 3MI - 3 - (4)
+\item
+Zadana je gramatika koja opisuje deklaraciju i inicijalizaciju dvodimenzionalnog polja.
+Odredite PRIMIJENI skupove za sve produkcije.
+Proširite gramatiku svojstvima i akcijskim znakovima tako da se omogući provjera ispravnosti deklaracije i inicijalizacije.
+Osim operatora \texttt{=},\texttt{[},\texttt{]},\verb|{|,\verb|}|,\texttt{;},\texttt{s\_zarez}, u završne znakove spadaju i ključne riječi \texttt{kr\_int}, \texttt{kr\_char}, \texttt{kr\_double}, identifikatori \texttt{idn} te konstante \texttt{const}.
+Pretpostavite da završni znak \texttt{const} ima jedno izvedeno svojstvo koje označava jedan od tri moguća tipa konstante.
+Veličina polja može se zadati samo pomoću cjelobrojnih konstanti.
+Tijekom provjere nije potrebno ispitivati ispravnost dimenzija inicijalizacijskog dijela. \cite[str.~178-180]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <T> idn <D> = <I> ;
+<D> \(\to\) [ const ][ const ]
+<E> \(\to\) \verb|{| <T> <K> \verb|}|
+<I> \(\to\) \verb|{| <E> <L> \verb|}|
+<K> \(\to\) s_zarez <T> <K> | \(\varepsilon\)
+<L> \(\to\) s_zarez <E> <L> | \(\varepsilon\)
+<T> \(\to\) const | kr_char | kr_double | kr_int
+\end{alltt} 
+
+% 2007 - 2MI - 7 - (4)
+\item
+Gramatiku koja služi za parsiranje naredbe deklaracije s pridruživanjem proširite svojstvima i akcijskim znakovima tako da se provjerava ispravnost tipa s lijeve i desne strane operatora pridruživanja.
+Nadalje, izračunajte i ispišite vrijednost konstante koja se zadanim izrazom pridružuje deklariranoj varijabli.
+Jezik ne dopušta implicitnu pretvorbu tipova. \cite[str.~178-180]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+<S>	\(\to\) <T> <I> = <E> ;
+<T>	\(\to\) int | float | double
+<I>	\(\to\) idn
+<V>	\(\to\) c\_int | c\_float | c\_double
+<E>	\(\to\) <V> <L> | <C> ( <E> )
+<L>	\(\to\) <O> <E> <L> | \(\varepsilon\)
+<C>	\(\to\) <T> | \(\varepsilon\)
+<O>	\(\to\) + | -
+\end{alltt}
+
+Napomena: Produkcija \texttt{<E> \(\to\) <C> ( <E> )} omogućava eksplicitnu promjenu tipa izraza \texttt{<E>}. 
+%aud/prim 15
+
+% 2007 - 2MI - 8 - (4)
+\item
+Za zadanu atributnu gramatiku, u pseudokodu sličnom jeziku C napišite parser metodom rekurzivnog spusta. \cite[str.~195-198]{udzbenik}
+
+\begin{tabular} { l l }
+\( <S>_{o} \to a <A>_{p} b c <B>_{q, r} \{Ispisi\}_{w} \) & p\(\leftarrow\)o  w\(\leftarrow\)q  r\(\leftarrow\)o \\
+\( <S>_{o} \to b <A>_{p} \{Zbroji\}_{r,w,z} \)  &  p\(\leftarrow\)o  w\(\leftarrow\)o  r\(\leftarrow\)o  \\
+\( <A>_{o} \to c <B>_{p,q} \{Oduzmi\}_{r,w,z} \)  & r\(\leftarrow\)o  w\(\leftarrow\)p  q\(\leftarrow\)o  \\
+\( <B>_{o,p} \to a c \)  &  o\(\leftarrow\)p + 2  \\
+\end{tabular} 
+
+% 2009 - 3MI - 10 - (4)
+\item
+Izgradite atributnu prijevodnu gramatiku koja parsira nizove cijelih dekadskih
+brojeva zapisane u obliku \verb|{|\texttt{a1, a2, a3, ..., an}\verb|}|.
+
+Proširite gramatiku svojstvima i akcijskim znakovima koji računaju aritmetičku sredinu zadanog niza tako da sva pravila računanja budu pravila preslikavanja.
+Nizovi mogu biti proizvoljne duljine. \cite[str.~178-180]{udzbenik}
+
+% 2010 - P2MI - 9 - (4)
+% 2009 - 2MI - 9 - (4)
+% 2009 - P2MI - 8 - (4)
+% 2009 - P3MI - 7 - (4)
+% 2010 - P3MI - 8 - (4)
+\item
+Izgradite atributnu prijevodnu gramatiku koja parsira nizove koji predstavljaju multiskup (skup u kojem se elementi mogu ponavljati) točaka u ravnini zapisan u obliku
+
+\begin{alltt}
+[(x1, y1), (x2, y2), ..., (xn, yn)].
+\end{alltt}
+
+U gramatici za broj koji predstavlja \texttt{x} ili \texttt{y} koordinatu točke koristiti završni znak \texttt{b}.
+Proširite gramatiku svojstvima i akcijskim znakovima koji računaju koordinate težišta multiskupa tako da sva pravila računanja budu pravila preslikavanja. \cite[str.~178-180]{udzbenik}
+
+% 2004 - 2MI - 6 - (4)
+\item
+Opišite postupak izgradnje potisnog automata za prijevodnu gramatiku. \cite[str.~184-195]{udzbenik}
+
+% 2004 - 2MI - 8 - (4)
+\item
+Objasnite što je provjera vrijednosti obilježja i opišite pojedine postupke za provjeru vrijednosti obilježja. \cite[str.~200-202]{udzbenik}
+
+% 2007 - 2MI - 6 - (4)
+\item
+Opišite svojstva L-atributne prijevodne gramatike. \cite[str.~180-181]{udzbenik}
+
+% 2003 - 2MI - 4 - (4)
+\item
+Nabrojite i objasnite formalne modele semantičkog analizatora. \cite[str.~169-170]{udzbenik}
+
+% 2003 - 2MI - 8 - (4)
+\item
+Definirajte L-atributnu prijevodnu gramatiku. \cite[str.~180-181]{udzbenik}
+
+% 2009 - 2MI - 4 - (4)
+% 2000 - 2MI - 7 - (4)
+\item
+Navedite i objasnite tri najčešće primjenjivana formalna modela semantičkog analizatora. \cite[str.~169-170]{udzbenik}
+
+% 2001 - 2MI - 9 - (4)
+\item
+Objasnite sintaksom vođenu semantičku analizu. \cite[str.~170-171]{udzbenik}
+
+% 2001 - 3MI - 2 - (4)
+\item
+Definirajte atributnu prijevodnu gramatiku. \cite[str.~173]{udzbenik}
+
+% 2001 - 3MI - 4 - (4)
+\item
+Opišite algoritam provjere jednakosti tipova obilježja temeljen na provjeri jednakosti strukture obilježja. \cite[str.~204-208]{udzbenik}
+
+% 2002 - 2MI - 5 - (4)
+\item
+Objasnite kako se obrađuju izvedena svojstva izlaznih završnih znakova koji se ne stavljaju na stog. \cite[str.~173-176]{udzbenik}
+
+% 2002 - 2MI - 7 - (4)
+\item
+Navedite i objasnite algoritam ispitivanja jednakosti obilježja konstantnih vrijednosti. \cite[str.~203-204]{udzbenik}
+
+% 2009 - 2MI - 5 - (4)
+\item
+Opišite korake gradnje atributnog generativnog stabla.
+Definirajte potpuno atributno generativno stablo. \cite[str.~178]{udzbenik}
+
+% 2009 - P2MI-E - 2 - (4)
+% 2003 - 2MI - 6 - (4)
+\item
+Objasnite kako se obrađuju svojstva izvorišta koja nemaju dostupne vrijednosti. \cite[str.~194]{udzbenik}
+
+% 2010 - 2MI - 5 - (4)
+\item
+Navedite uvjete pod kojima je atributna prijevodna gramatika ujedno i L-atributna prijevodna gramatika. \cite[str.~180-181]{udzbenik}
+
+% 2010 - P2MI - 2 - (4)
+\item
+Objasnite razliku između izvedenih i nasljednih svojstava.
+Kako se izvedena i nasljedna svojstva spremaju na stog tijekom parsiranja od vrha prema dnu? \cite[str.~173-177]{udzbenik}
+
+% 2010 - P3MI-L - 2 - (4)
+\item
+Navedite zadatke semantičkog analizatora. \cite[str.~160]{udzbenik}
+
+% 2010 - 3MI - 8 - (4)
+\item
+Izgradite atributnu prijevodnu gramatiku koja računa zbroj elemenata polja pozitivnih cijelih brojeva.
+Polje je zapisano u sljedećem formatu:
+
+\begin{alltt}
+[x1 $ x2 $ x3 $ ... $ xn]
+\end{alltt}
+
+U gramatici za brojeve \texttt{x} koristiti završni znak \texttt{b}.
+Proširite gramatiku svojstvima i akcijskim znakovima koji računaju zbroj elemenata polja tako da sva pravila računanja budu pravila preslikavanja.
+Polje može biti proizvoljne veličine.  \cite[str.~177-180]{udzbenik} \cite{auditorne}
+%aud/prim 15
+
+% AV - 13 - (4)
+\item
+Izgradite atributnu prijevodnu gramatiku koja parsira parove binarnih brojeva zapisane u obliku
+
+\begin{alltt}
+x1 x2 x3 ... xn \(\diamondsuit\) y1 y2 y3 ... ym
+xi, yi \(\in\) \verb|{|0, 1\verb|}|
+\end{alltt}
+
+Simbol \(\diamondsuit\) predstavlja operator zbrajanja koji za neparne bitove oba broja uzima vrijednost \texttt{0}.
+Bitovi se broje od najmanje značajnoga prema najznačajnijem, počevši od nule.
+Na primjer:
+\begin{alltt}
+01010010 \(\diamondsuit\) 1011011011 = 01010000 + 0001010001
+\end{alltt}
+Proširite izgrađenu gramatiku svojstvima i akcijskim znakovima koji računaju rezultat primjene operatora \(\diamondsuit\) izražen u dekadskom obliku.
+Brojevi mogu imati proizvoljan broj znamenaka. \cite[str.~177-180]{udzbenik} \cite{auditorne}
+%aud/prim 15
+
+% AV - 14 - (4)
+\item
+Izgradite potisni automat za zadanu atributnu prijevodnu gramatiku.
+Za sve akcije \emph{Zamijeni} prikazati stanje na stogu neposredno prije i neposredno poslije primjene akcije. \cite[str.~184-195]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{ll}
+(1) \( <S> \to a_{p} b_{q} <A>_{r} \{X_{v}\} \) &   \( v \leftarrow p \times q+r \) \\
+(2) \( <A>_{p} \to a_{q} <B>_{r} \) & \( p \leftarrow q+r \) \\
+(3) \( <B>_{p} \to c_{q} \) & \( p \leftarrow q \)  \\
+\end{tabular} 
+%aud/prim 16
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Potpora izvođenju ciljnog programa}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 2001 - 3MI - 8 - (5)
+\item
+Za svaki od četiri načina prenošenja parametara odredite stanja varijabli \texttt{j}, \texttt{k} i \texttt{l} te polja \texttt{i} nakon izvođenja zadanog programskog odsječka. \cite[str.~243-252]{udzbenik}
+
+\begin{alltt}
+int i[3]=\verb|{|5,6,7\verb|}|,j=8,k=2,l=0;
+
+divmod(int a,int b,int c,int d)
+\verb|{|
+  c=a/b;  
+  d=a\%b;
+  l=a\%b+1;
+\verb|}|
+
+divmod(i[k],j,k,l);
+\end{alltt} 
+
+% 2003 - 3MI - 3 - (5)
+% 2009 - P2MI-L - 7 - (5)
+\item
+Za dani programski odsječak odredite ispis ako se kod poziva potprograma koristi: \cite[str.~243-252]{udzbenik}\\
+a) razmjena vrijednosti \\
+b) razmjena adresa (kod rekurzivnog poziva šalje se ista adresa koja je primljena kao parametar) \\
+c) razmjena imena
+
+\begin{alltt}
+f(a,b)
+\verb|{|
+   ispiši(a,b);
+   ako (b>=1)
+   \verb|{|
+      b=b-1;
+      a=a-1;
+      f(b,a);
+   \verb|}|
+\verb|}|
+
+glavni()
+\verb|{|
+   cijeli x[3]=\verb|{|1,0,1\verb|}|;
+   cijeli y=2;
+
+   f(y,x[y]);
+   ispiši(x[0],x[1],x[2],y);
+\verb|}|
+\end{alltt} 
+
+% 2002 - 3MI - 2 - (5)
+\item
+Opišite algoritam gradnje lanca kazaljki nelokalnih imena i vektora dubine gniježđenja kod statičkog pravila djelokruga ugniježđenih procedura. \cite[str.~239]{udzbenik}
+
+% 2003 - 3MI - 2 - (5)
+\item
+Objasnite povezivanje imena izvornog programa i objekata ciljnog programa te relaciju okoline i relaciju stanja. \cite[str.~221-222]{udzbenik}
+
+% 2010 - 3MI - 2 - (5)
+\item
+Ukratko definirajte relaciju okoline i relaciju stanja. \cite[str.~221-222]{udzbenik}
+
+% 2001 - 3MI - 6 - (5)
+\item
+Objasnite načine ostvarenja dinamičkog pravila djelokruga. \cite[str.~241-242]{udzbenik}
+
+% 2003 - 3MI - 4 - (5)
+\item
+Opišite mehanizam povratne razmjene vrijednosti parametara procedura te navedite način ostvarenja. \cite[str.~243-252]{udzbenik}
+
+% 2004 - 3MI - 2 - (5)
+\item
+Navedite i kratko objasnite postupke za određivanje djelokruga deklaracije nelokalnih imena. \cite[str.~236-241]{udzbenik}
+% 2007 - 3MI - 9 - (5)
+
+\item
+Objasnite način ostvarenja statičkog pravila djelokruga nelokalnih imena ugniježđenih procedura. \cite[str.~236-241]{udzbenik}
+
+% 2009 - 3MI - 2 - (5)
+% 2010 - P3MI-L - 5 - (5)
+\item
+Navedite osnovne načine razmjene ulazno/izlaznih parametara procedura i što se zapisuje u opisnik pozvane procedure prilikom pojedinog načina razmjene. \cite[str.~243-244]{udzbenik}
+
+% 2009 - 3MI - 3 - (5)
+\item
+Objasnite pojmove djelokrug deklaracije i životni vijek pridruživanja imena.
+Što se događa sa životnim vijekom pridruživanja imena prilikom rekurzivnih poziva potprograma? \cite[str.~233-234]{udzbenik}
+
+% 2010 - 3MI - 3 - (5)
+\item
+Objasnite djelokrug deklaracije i navedite moguća pravila definiranja djelokruga deklaracija.
+Pravila nije potrebno objašnjavati. \cite[str.~233-234]{udzbenik}
+
+% 2010 - P3MI - 3 - (5)
+\item
+Objasnite vektor dubine gniježđenja i algoritam njegove izgradnje. \cite[str.~239]{udzbenik}
+
+% 2007 - 3MI - 10 - (5)
+\item
+Za prikazani programski odsječak odredite ispis ako se kod poziva potprograma koristi: (a) razmjena vrijednosti, (b) razmjena adresa, (c) razmjena imena i (d) povratna razmjena vrijednosti. \cite[str.~243-252]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+varijabla x=0, y=3, z=-1;
+polje o[3]=10, o[4]=20;
+  Racunaj(p, q, r) \verb|{|
+   z = p + x
+   q = q + 1
+   Ispisi(p, q, r);
+   r = z + q
+  \verb|}|
+\verb|{|
+  za x = 3 do 4 \verb|{|
+    Racunaj(o[x], o[3+x\%2], z);
+    Ispisi(x, y, z, o[3], o[4]);
+  \verb|}|
+\verb|}|
+\end{alltt} 
+%aud/prim 19
+
+% 2009 - 3MI - 9 - (5)
+\item
+Za zadani program prikažite sadržaj opisinka procedura u trenutku neposredno prije izvođenja naredbe \texttt{05} ako se koristi: (a) statičko pravilo djelokruga, (b) dinamičko pravilo djelokruga.
+U oba slučaja objasnite tijek izvođenja programa i prikažite što će se ispisati kao posljedica naredbe \texttt{17}. \cite[str.~234-242]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  Glavni()
+02    int y = 3;
+03    def Z(a)
+04      def X(x)\verb|{|
+05        vrati x+y;
+06      \verb|}|
+07      def Y(y)\verb|{|
+08        ako y <= 4 onda
+09          vrati Y(5);
+10        inače
+11          vrati X(y);
+12      \verb|}|
+13    \verb|{|
+14      Y(a);
+15    \verb|}|
+16  \verb|{|
+17    ispiši Z(y)
+18  \verb|}|
+\end{alltt} 
+%aud/prim 18
+
+% AV - 16 - (5)
+\item
+Za zadani program prikažite sadržaj opisnika procedura u trenutku prije izvođenja naredbe \texttt{07} ako se koristi: (a) statičko pravilo djelokruga, (b) dinamičko pravilo djelokruga. \cite[str.~234-242]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  Glavni()
+02    int y = 3;
+03    def Z(a)
+04      int r = 5
+05      def X(x)
+06      \verb|{|
+07        vrati x+y+1;
+08      \verb|}|
+09      def Y(y)
+10      \verb|{|
+11        vrati X(y)+1;
+12      \verb|}|
+13    \verb|{|
+14      Y(a);
+15    \verb|}|
+16  \verb|{|
+17    ispiši Z(y+1)
+18  \verb|}|
+\end{alltt} 
+%aud/prim 18
+
+% 2010 - 3MI - 6 - (5)
+\item
+Prikažite i objasnite izvođenje sljedećeg programa ako se za poziv procedure koristi (a) razmjena vrijednosti, (b) razmjena adresa i (c) razmjena imena \cite[str.~243-252]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  varijabla a = 0;
+02  polje V = \verb|{|7, 8\verb|}|; // V[0]=7, V[1]=8
+03  procedura Proc(x, y) \verb|{|
+04    x = y;
+05    a = 1;
+06    y = a;
+07  \verb|}|
+08  \verb|{| // ovo je glavni program
+09    Proc(V[0], V[a]);
+10    Ispiši(a, V[0], V[1]);
+11  \verb|}|
+\end{alltt} 
+%aud/prim 19
+
+% AV - 15 - (5)
+\item
+Za zadani program izgradite stablo aktiviranja procedura. \cite[str.~228-229]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  Glavni()
+02    X(a)
+03    \verb|{|
+04      vrati a + 1;
+05    \verb|}|
+06    Y(b, c)
+07    \verb|{|
+08      vrati c - b/4;
+09    \verb|}|
+10
+11    Z(d, e)
+12    \verb|{|
+13      dok (d <= e)
+14      \verb|{|
+15        d = X(d);
+16        e = Y(d, e);
+17        Z(d, e);
+18        if (d == 5)
+19        \verb|{|
+20          d = 8;
+21          e = 8;
+22          dalje;
+23        \verb|}|
+24      \verb|}|
+25    \verb|}|
+26  \verb|{|
+27    Z(3, 7)
+28  \verb|}|
+\end{alltt}
+%aud/prim 17
+
+% AV - 17 - (5)
+\item
+Prikažite razliku između razmjene parametara primjenom mehanizma razmjene adresa i mehanizma razmjene imena na sljedećem programu: \cite[str.~243-252]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  var x = 0
+02  polje A = \verb|{|10, 20\verb|}| // A[0]=10, A[1]=20
+03  P(a) \verb|{|
+04    x = 1
+05    a = 100
+06    Ispisi(A[0], A[1])
+07  \verb|}|
+08  \verb|{|
+09    P(A[x])
+10  \verb|}|
+\end{alltt}
+%aud/prim 19
+
+% AV - 18 - (5)
+\item
+Za zadani program prikažite vrijednosti globalnih i lokalnih varijabli tijekom izvođenja programa. Razmjena parametara procedura ostvaruje se primjenom mehanizma razmjene imena. \cite[str.~243-252]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  varijabla x=0, y=3, z=-1;
+02  polje o = \verb|{|0, 0, 0, 10, 20\verb|}|;
+03  Racunaj(p, q, r) \verb|{|
+04    z = p + x;
+05    z = (q + 1) \% 2 + 3;
+06    Ispisi(p, x, r);
+07    r = z + q;
+08  \verb|}|
+09  \verb|{|
+10    za x = 3 do 4 \verb|{|
+11      Racunaj(o[x], o[3+x\%2], z);
+12      Ispisi(x, y, z, o[3], o[4]);
+13    \verb|}|
+14  \verb|}|
+\end{alltt}
+%aud/prim 19
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Generiranje međukoda}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 2002 - 3MI - 4 - (6)
+\item
+Navedite i kratko opišite linearne oblike međukôda. \cite[str.~257-259]{udzbenik}
+
+% 2004 - 3MI - 4 - (6)
+
+\item
+Navedite osnovne razine međukoda i objasnite namjenu svake razine. \cite[str.~254-255]{udzbenik}
+
+% 2009 - 3MI - 4 - (6)
+\item
+Objasnite graf zavisnosti. \cite[str.~260-261]{udzbenik}
+
+% 2004 - 3MI - 7 - (6)
+\item
+Za zadani programski odsječak nacrtajte grafove zavisnosti. Grafove zavisnosti prikažite u ovisnosti o parametru X za sljedeće slučajeve: \cite[str.~257-259]{udzbenik} \cite{auditorne}\\
+a)	X=a (jezični pretprocesor zamjenjuje simboličko ime X varijablom a) \\
+b)	X=b (jezični pretprocesor zamjenjuje simboličko ime X varijablom b)
+
+\begin{alltt}
+a = b + 5;
+dok ( X == 10 )
+  b = X + 3;
+X = 20;
+\end{alltt} 
+%aud/prim 22
+
+% 2007 - 3MI - 2 - (6)
+% 2009 - P2MI-L - 3 - (6)
+\item
+Navedite oblike međukôda te za svaki oblik navedite primjere. \cite[str.~255-261]{udzbenik}
+
+% 2009 - 3MI - 6 - (6)
+\item
+Za zadani program izgradite graf tijeka izvođenja. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01      Učitaj(x)
+02      p := 1.0
+03  L1: t := abs(p*p-x)
+04      if t <= 1e-9 goto L2
+05      p := avg(p, x/p)
+06      goto L1
+07  L2: Ispiši(p)
+\end{alltt} 
+%aud/prim 22
+
+% 2009 - P2MI-L - 8 - (6)
+\item
+Za zadani programski odsječak izgradite graf zavisnosti programa koji pokazuje četiri vrste zavisnosti podataka i zavisnosti upravljačkog tijeka izvođenja programa. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+a=3+b; c=d+a;
+ako (b<c) \verb|{|
+  b=b+a; d=3/(b+2);
+\verb|}| 
+inače ako (b=c)\verb|{|
+  b=b+a; d=3/(b+2);
+\verb|}|
+c = a + d;
+\end{alltt}
+%aud/prim 22
+
+% 2010 - 3MI - 9 - (6)
+\item
+Za prikazani isječak programa nacrtajte graf zavisnosti upravljačkog tijeka i graf zavisnosti podataka. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01  p = 1
+02  i = 20;
+03  a = i / 4
+04  ako(i >= 3)
+05  \verb|{|
+06    q = q + i/a;
+07    ako(a<10)
+08    \verb|{|
+09      a = q*p;
+10    \verb|}|
+11    i = i-1;
+12  \verb|}|
+13  p = 3 * a;
+\end{alltt} 
+%aud/prim 22
+
+% 2001 - 3MI - 7 - (6)
+\item
+Opišite graf zavisnosti programa i navedite sve zavisnosti koje se njime opisuju. \cite[str.~257-259]{udzbenik}
+
+% 2002 - 3MI - 9 - (6)
+\item
+Za zadani isječak programa nacrtajte graf zavisnosti upravljačkog tijeka i graf zavisnosti podataka. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+a=b+c;
+c=a;
+ako (b>c)
+\verb|{|
+  c=b;
+  a=b+a;
+\verb|}|
+inače
+\verb|{|
+  n=m+a;
+  m=n+a;
+\verb|}|
+n=b+a;
+\end{alltt} 
+%aud/prim 22
+
+% 2007 - 3MI - 7 - (6)
+\item
+Za prikazani isječak programa nacrtajte graf zavisnosti upravljačkog tijeka i graf zavisnosti podataka. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+p = 1
+i = 20;
+a = i / 4
+dok(i >= 3)
+\verb|{|
+  q = q + i/a;
+  if(a<10)
+  \verb|{|
+    a = q*p;
+  \verb|}|
+  i = i-1;
+\verb|}|
+p = 3 * a;
+\end{alltt} 
+%aud/prim 22
+
+% 1999 - 3MI - 2 - (6)
+\item 
+Za dani program nacrtajte graf zavisnosti kako za upravljački tijek, tako i za sve vrste zavisnosti podataka.\cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\noindent
+\begin{alltt}
+b:=b*3;
+a:=b+d;
+ako a<143 tada
+  c:=a%8;
+  a:=a/8;
+d:=b+d;
+\end{alltt} 
+%aud/prim 22
+
+% 2010 - P3MI-L - 3 - (6)
+\item
+Navedite tri oblika međukoda. \cite[str.~255]{udzbenik}
+
+% AV - 20 - (6)
+\item
+Za zadani program izgradite graf tijeka izvođenja. \cite[str.~257-259]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+01      Input(n)
+02      Input(p)
+03      a0 := 2
+04      if n <= 5 goto L1
+05      if p > 5 goto L2
+06  L1: a1 := a0 + 3
+07      a2 := a1 + p
+08      a3 := a1 * n
+09      goto Z
+10  L2: a2 := 3 * 3
+11      Output (a3)
+12      p := p + 1
+13      goto L1
+14  Z:  nop
+\end{alltt} 
+%aud/prim 22
+
+% 2010 - P3MI-L - 9 - (6)
+\item
+Izgradite atributnu prijevodnu gramatiku koja generira troadresne naredbe za računanje aritmetičkih izraza koji sadrže operatore \texttt{+} i \texttt{*}.
+U izrazima je dopušteno korištenje zagrada. \cite[str.~178-180]{udzbenik} \cite{auditorne}
+%aud/prim 15
+
+% 2007 - 3MI - 6 - (6)
+\item
+Na temelju zadane gramatike izgradite atributnu prijevodnu gramatiku za generiranje troadresnih naredbi koje ostvaruju programe napisane u jeziku zadane gramatike. \cite[str.~178-180]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <N> <S> | \(\varepsilon\)
+<N> \(\to\) <Assign> | <If> | <While>
+<If> \(\to\) if <Exp> then <N> else <N> end
+<While> \(\to\) while <Exp> do <N> end
+<Assign> \(\to\) idn '=' <Exp> ';'
+<Exp> \(\to\) <Exp> \( \wedge \) <Exp>
+<Exp> \(\to\) <Exp> \( \vee \) <Exp>
+<Exp> \(\to\) idn
+\end{alltt} 
+
+% AV - 19 - (6)
+\item
+Izgradite atributnu prijevodnu gramatiku koja generira troadresne naredbe za računanje logičkih izraza koji sadrže operator \(\wedge\), \(\vee\) i \(\lnot\). \cite[str.~178-180]{udzbenik}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Generiranje ciljnog programa}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 1999 - 3MI - 5 - (7)
+\item 
+Napišite tablice generatora ciljnog programa koji kao ulaz koristi sintaksno stablo čije čvorove čine četiri matematičke operacije (zbrajanje, oduzimanje, množenje i dijeljenje).
+Ciljno računalo posjeduje samo jedan registar. 
+Nacrtajte sintaksno stablo za izraz \texttt{(a/b+(c+d)*(e-f))*(g-h/i)} i navedite redoslijed kojim generator obilazi čvorove. \cite[str.~281-284]{udzbenik}
+
+% 2002 - 3MI - 8 - (7)
+\item
+Objasnite generiranje ciljnog programa na temelju postfiksnog sustava oznaka. \cite[str.~279-280]{udzbenik}
+
+% 2003 - 3MI - 8 - (7)
+\item
+Opišite postupak izrade adresa naredbama. \cite[str.~268]{udzbenik}
+
+% 2010 - P3MI - 4 - (7)
+\item
+Opišite Chaitinov heuristički postupak za bojanje grafa zavisnosti simboličkih i stvarnih registara. \cite[str.~273]{udzbenik}
+
+% 2010 - P3MI - 5 - (7)
+\item
+Opišite algoritam generiranja ciljnog programa na osnovi troadresnih naredbi. \cite[str.~276-279]{udzbenik}
+
+% 2004 - 3MI - 6 - (7)
+\item
+Navedite elemente strukture generatora ciljnog programa. \cite[str.~265]{udzbenik}
+
+% 2004 - 3MI - 8 - (7)
+\item
+Objasnite kako se dobiva i boji graf zavisnosti simboličkih i stvarnih registara te kako se dodjeljuju stvarni registri. \cite[str.~269-273]{udzbenik}
+
+% 2002 - 3MI - 5 - (7)
+\item
+Za zadani isječak programa odredite izlaz generatora ciljnog programa za Motorolinu seriju procesora 68000.
+Na raspolaganju su 3 registra (\texttt{D0}, \texttt{D1} i \texttt{D2}), varijablu \texttt{k} nije moguće pohraniti u registre \texttt{D0} i \texttt{D1}, a memorija se ne smije koristiti.
+Pretpostavite da se varijabla \texttt{n} koristi u nastavku programa. 
+Ne zahtijeva se uporaba algoritma bojanja grafova.
+
+\begin{alltt}
+i=0;
+j=3;
+k=i+j;
+m=k*2;
+i=m-5;
+j=4*j;
+n=j-i;
+k=m+i;
+\end{alltt}
+
+% 2003 - 3MI - 9 - (7)
+\item
+Za dani isječak izvornog programa generirajte postfiksni sustav oznaka i pritom definirati korištene operatore grananja.
+Na temelju dobivenog postfiksnog sustava oznaka, prikažite sadržaj stoga tijekom generiranja ciljnog programa za neki od Motorolinih mikroprocesora. \cite[str.~256-257, 279-280]{udzbenik}
+
+\begin{alltt}
+dok (i>j)
+\verb|{|
+  ako (i>k)
+    k=i+j-m;
+  inače
+    i=j-4;
+\verb|}|
+\end{alltt} 
+
+% 2004 - 3MI - 9 - (7)
+\item
+Za zadanu gramatiku napišite tablice generatora ciljnog programa koji kao ulaz koristi sintaksno stablo.
+Ciljni program je strojni jezik ili za Motoroline ili za Intelove procesore.
+Operator \texttt{+} označava zbrajanje, a unarni operator \texttt{!} označava logičko invertiranje vrijednosti prema sljedećem pravilu zapisanom u C notaciji: \texttt{!x = (x!=0) ? 0:1}. \cite[str.~281-283]{udzbenik}
+
+\begin{alltt}
+<Naredba> \(\to\) <Varijabla> = <Izraz>
+<Izraz> \(\to\) <Izraz> + <Izraz>
+<Izraz> \(\to\) ! ( <Izraz> )
+<Izraz> \(\to\) <Varijabla>
+<Varijabla> \(\to\) a | b | c | d | e
+\end{alltt} 
+
+% 2009 - 3MI - 5 - (7)
+\item
+Prikažite tablicu upravljanja za operaciju množenja za generiranje ciljnog programa na osnovi sažetog sintaksnog stabla ako generator raspolaže samo jednim registrom \texttt{R}. \cite[str.~281-283]{udzbenik}
+
+% 2009 - P3MI - 8 - (7)
+\item
+Na temelju naredbe izvornog programa \texttt{(a+b*c)/(f*g-(d+e)/(h+k))} nacrtajte sažeto sintaksno stablo i na temelju njega tablično prikažite generiranje ciljnog programa. \cite[str.~261-262, 281-284]{udzbenik}
+
+% 2009 - P2MI-L - 5 - (7)
+\item
+Na temelju naredbe izvornog programa \texttt{a+b*c} nacrtajte sažeto sintaksno stablo i na temelju njega tablično prikažite generiranje ciljnog programa. \cite[str.~261-262, 281-284]{udzbenik}
+
+% 2010 - 3MI - 10 - (7)
+\item
+Na temelju naredbe izvornog programa \texttt{(a+b*c)/(f-g-h)} nacrtajte sažeto sintaksno stablo i na temelju njega tablično prikažite generiranje ciljnog programa. \cite[str.~261-262, 281-284]{udzbenik}
+
+% 2009 - P3MI - 9 - (7)
+\item
+Objasnite algoritam generiranja ciljnog programa na temelju troadresnih naredbi.
+Prikažite postupak generiranja troadresnih naredbi za sljedeće naredbe izvornog programa: \cite[str.~262-263, 276-279]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+p = (a + b/c) + (d/e)-(d+e) \(\times\) e
+r = (p \(\times\) c) + (d \(\times\) e \(\times\) 4)-(d+e) \(\times\) e
+\end{alltt} 
+%aud/prim 20
+
+% 2009 - P3MI - 10 - (7)
+\item
+Za zadani programski odsječak primijenite algoritam bojanja grafova kako biste ostvarili pridruživanje registara \texttt{D0}-\texttt{D5}. \cite[str.~269-273]{udzbenik}
+
+\begin{alltt}
+ako (j > 3) \verb|{|
+   j : = 23;
+   i := 11;
+   m := j + 5;
+\verb|}| inače \verb|{|
+   i := 17;
+   j := m + 5;
+   ako (k < 4) \verb|{|
+      k := i + 8;
+      m := j – 3;
+   \verb|}| inače ako (k == 5) \verb|{|
+      k := i;
+      i := 19;
+      m := i + k * i;
+   \verb|}| inače \verb|{|
+      m := 1;
+   \verb|}|
+\verb|}|
+i := 4 + 3+m;
+\end{alltt} 
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Priprema izvođenja ciljnog programa}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 2010 - P3MI - 2 - (8)
+% 2010 - P3MI-L - 4 - (8)
+\item
+Navedite razradbu jezičnih procesora s obzirom na stupanj pripremljenosti ciljnog programa za izvođenje. \cite[str.~286]{udzbenik}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Optimiranje}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}[resume]
+
+% 1999 - 3MI - 6 - (9)
+\item 
+Opišite što se nastoji utvrditi analizom toka podataka. \cite[str.~301-302]{udzbenik}
+
+% 2002 - 2MI - 1 - (9)
+\item
+Objasnite razliku između strojno nezavisnog i strojno zavisnog optimiranja. \cite[str.~294]{udzbenik}
+
+% 2002 - 3MI - 6 - (9)
+\item
+Nabrojite komponente koje čine analizu izvođenja programa. \cite[str.~297]{udzbenik}
+
+% 2003 - 3MI - 6 - (9)
+\item
+Opišite postupak optimiranja petlji kod međukoda niže razine i ciljnog programa. \cite[str.~311-312]{udzbenik}
+
+% 2007 - 3MI - 5 - (9)
+\item
+Opišite analizu tijeka izvođenja programa. \cite[str.~298-301]{udzbenik}
+
+% 2007 - 3MI - 8 - (9)
+\item
+Nabrojite i kratko opišite postupke optimiranja međukoda srednje razine. \cite[str.~316-317]{udzbenik}
+\end{enumerate}
+
+\newpage
+\addcontentsline{toc}{chapter}{Literatura}
+\begin{thebibliography}{10}
+\bibitem{udzbenik}
+Siniša Srbljić:
+\emph{Prevođenje programskih jezika}, Element, 2007.
+\bibitem{auditorne}
+Daniel Skrobo, Ivan Žužak, Miroslav Popović:
+\emph{Prevođenje programskih jezika - auditorne vježbe}, ZEMRIS, 2007.
+\end{thebibliography}
+
+\end{document}
