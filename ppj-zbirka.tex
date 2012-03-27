@@ -277,6 +277,13 @@ Pored ovoga postoje i jezični procesori \JP{k}{l}{k} (kros-kompilator) koji pre
 Napišite postupak samopodizanja kojim se može dobiti traženi jezični procesor uz uporabu postojećih jezičnih procesora. \cite[str.~27]{udzbenik} \cite{auditorne}
 %aud/prim 8
 
+\item
+U računalnom sustavu koriste se tri računala A, B i C, različitih arhitektura, pri čemu računalo A izvodi strojni jezik a, računalo B izvodi strojni jezik b, a računalo C izvodi strojni jezik c.
+Za računalo C dostupni su \JP{c}{y}{c} i \JP{c}{z}{c} te samoprevodioci \JP{y}{y}{a} i \JP{z}{z}{b}. 
+Osim toga, dostupni su jezični procesori \JP{y}{a}{y}, \JP{z}{y}{c} i \JP{a}{x}{c}.
+Navedite postupak konstrukcije \JP{c}{x}{c} primjenom isključivo raspoloživih jezičnih procesora.
+Dopušteno je stvaranje i novih jezičnih procesora, ali isključivo prevođenjem postojećih jezičnih procesora pomoću drugih raspoloživih jezičnih procesora. \cite[str.~27]{udzbenik} \cite{auditorne}
+
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -348,7 +355,8 @@ Objasnite postupak razrješenja nejednoznačnosti u leksičkoj analizi pretraži
 % 2000 - 1MI - 6 - (2)
 % 2010 - P1MI-L - 5 - (2)
 \item
-Objasnite postupak razrješenja nejednoznačnosti pretraživanjem desnog konteksta. \cite[str.~63-64]{udzbenik}
+Općenito objasnite (ne na primjeru) postupak primjene pretraživanja desnog konteksta za razrješavanje nejednoznačnosti u leksičkoj analizi.
+Potrebno je definirati kako se u regularnim izrazima zadaje desni kontekst, kako se na osnovi regulranih izraza sa zadanim desnim kontekstom stvara konačni automat te kako se dobiveni konačni automat koristi za leksičku analizu. \cite[str.~63-64]{udzbenik}
 
 % 2010 - P1MI - 2 - (2)
 % 2010 - P1MI-L - 4 - (2)
@@ -358,7 +366,7 @@ Navedite pravila za određivanje klase leksičke jedinke i grupiranje znakova u 
 % 2010 - P1MI - 3 - (2)
 % 2010 - P1MI-L - 3 - (2)
 \item
-Navedite ulaze i izlaze iz generatora leksičkog analizatora i leksičkog analizatora ako je leksički analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~53]{udzbenik}
+Općenito definirajte (ne na primjeru) ulaze i izlaze iz programa generatora leksičkog analizatora i programa leksičkog analizatora ako je leksički analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~53]{udzbenik}
 
 % 2010 - P1MI - 4 - (2)
 \item
@@ -458,7 +466,7 @@ Znak & e & l & s & e & b & 2 & + & = & 2 & ; \\ \hline
 
 % 2007 - 1MI - 1 - (2)
 \item
-Leksički analizirajte zadani programski odsječak te konstruirati sve izlazne tablice leksičkog analizatora.
+Leksički analizirajte zadani programski odsječak te konstruirajte sve izlazne tablice leksičkog analizatora.
 Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
 
 \begin{alltt}
@@ -470,6 +478,19 @@ Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
 \verb|}|
 \end{alltt} 
 %aud/prim 2
+
+\item
+Leksički analizirajte zadani programski odsječak te konstruirajte sve izlazne tablice leksičkog analizatora.
+Ključne su riječi masno otisnute. \cite[str.~51]{udzbenik} \cite{auditorne}
+
+\begin{alltt}
+\textbf{int} lijevo_stanje = novo_stanje(automat) ;
+\textbf{ako} (pronadjen == 1) \verb|{|
+  \textbf{za} (i=0; i<br_elemenata(izbori); i=i+1) \verb|{|
+    \textbf{string} privremeno = pretvori(izbori[i], automat) ;
+  \verb|}|
+\verb|}|
+\end{alltt} 
 
 % 2009 - P3MI - 2 - (2)
 % 2003 - 2MI - 1 - (2)
@@ -545,6 +566,14 @@ Simulator prepoznaje dva niza: \texttt{AUTO} i \texttt{AUTOMOBIL}.
 Na ulazu automata pojavljuje se niz \texttt{AUTOMATSKIAUTOMOBIL}.
 Odredite koje će nizove simulator leksičkog analizatora prepoznati i hoće li ispisati neke greške.
 Potrebno je i ispisati tablicu stanja unutarnjih kazaljki (početak, završetak i posljednji) programa simulatora za svaki učitani znak. \cite[str.~58-60]{udzbenik}
+
+\item
+Ostvaren je program simulator leksičkog analizatora zasnovan na tablici prijelaza DKA.
+Simulator prepoznaje dva niza: \texttt{ANA} i \texttt{ANANAS}. Na ulazu automata pojavljuje se niz \texttt{ANAVOLIANANAS}.
+Odredite koje će nizove simulator leksičkog analizatora prepoznati i hoće li ispisati neke greške.
+Simulator provodi postupak oporavka od pogreške ispisivanjem znakova koje nije moguće grupirati u leksičku jedinku (i pomakom na
+sljedeći znak).
+Potrebno je ispisati vrijednosti unutarnjih kazaljki programa simulatora za svaki učitani znak.
 
 % 2003 - 1MI - 3 - (2)
 \item
@@ -661,6 +690,22 @@ r8 & \(<\)S\(>\) !++ & ispiši("r8"); izađi iz stanja S \\ \hline
 \end{tabular}
 %aud/prim 3
 
+\item
+Prikažite postupak obrade i izlaz leksičkog analizatora zasnovanog na regularnim izrazima na sljedećim ulaznim nizovima (obrada svakog niza je nezavisna):
+
+a) sedam78ggg \\
+b) gggosam8sedam7devet8
+
+\begin{tabular}{|c|c|} \hline
+r1 & sedam\textbar 7 \\ \hline
+r2 & osam\textbar 8 \\ \hline
+r3 & devet\textbar 9 \\ \hline
+r4 & (a\textbar b\textbar...\textbar z)*(0\textbar 1\textbar...\textbar9)* \\ \hline
+\end{tabular}
+
+Prikažite koji su znakovi ulaznih nizova uspješno grupirani pomoću kojih regularnih izraza. 
+Nije potrebno prikazivati rad analizatora u smislu varijabli koje koristi analizator zasnovan na tablici prijelaza DKA ili \(\varepsilon\)-NKA. \cite[str.~47-48]{udzbenik} \cite{auditorne}\\
+
 % 2010 - 1MI - 7 - (2)
 \item
 Neka su zadana sljedeća pravila prevođenja u ulaznoj datoteci za program LEX:
@@ -735,7 +780,7 @@ Navedite i kratko opišite postupke pretvorbe produkcija u produkcije LL(1)-gram
 % 1999 - 2MI - 6 - (3)
 % 2010 - 3MI - 4 - (3)
 \item
-Objasnite postupak lijevog izlučivanja za preuređivanje produkcija gramatike. \cite[str.~108]{udzbenik}
+Općenito definirati (ne na primjeru) postupak lijevog izlučivanja koji se koristi pri pretvorbi produkcija u produkcije LL(1) gramatike. \cite[str.~108]{udzbenik}
 
 % 2003 - 1MI - 9 - (3)
 \item
@@ -787,13 +832,17 @@ Opišite postupak izgradnje potisnog automata za S-gramatiku. \cite[str.~87-88]{
 \item
 Definirajte LL(1)-gramatiku i kratko opišite konstrukciju potisnog automata za LL(1)-gramatiku. \cite[str.~95-99]{udzbenik}
 
+\item
+Navedite i općenito objasnite (ne na primjeru) sve akcije potisnog automata konstruiranog na osnovi LL(1) gramatike (pomoć: postoji 6 različitih akcija.
+Ne objašnjavati postupak konstrukcije potisnog automata na osnovi gramatike već samo značenje akcija u kontekstu rada automata). \cite[str.~95-99]{udzbenik}
+
 % 2010 - P2MI-L - 2 - (3)
 \item
 Navedite zadatke sintaksnog analizatora. \cite[str.~71]{udzbenik}
 
 % 2010 - P2MI-L - 3 - (3)
 \item
-Navedite ulaze i izlaze iz sintaksnog analizatora ako je sintaksni analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~71]{udzbenik}
+Općenito definirajte (ne na primjeru) ulaze i izlaze iz programa generatora sintaksnog analizatora i programa sintaksnog analizatora ako je sintaksni analizator ostvaren kao zasebni prolaz jezičnog procesora. \cite[str.~71]{udzbenik} \cite[str.~154-158]{udzbenik}
 
 % 2010 - P2MI-L - 5 - (3)
 \item
@@ -840,6 +889,11 @@ Objasnite razlike u ostvarenju parsera LR(0), SLR(1), LALR i LR(1) te navedite n
 % 2002 - 2MI - 3 - (3)
 \item
 Objasnite konstrukciju \(\varepsilon\)-NKA u postupku izgradnje SLR(1)-parsera. \cite[str.~147-149]{udzbenik}
+
+\item
+Navedite i općenito objasnite (ne na primjeru) sve četiri akcije potisnog automata konstruiranog na osnovi LR(1) gramatike.
+Ne objašnjavajte postupak konstrukcije potisnog automata na osnovi gramatike već samo značenje akcija u kontekstu rada automata.
+
 
 % 2003 - 1MI - 7 - (3)
 \item
@@ -1571,6 +1625,16 @@ Odredite tip zadane gramatike i konstruirajte potisni automat parsera od vrha pr
 <C> \(\to\) cc
 \end{alltt}
 
+\item
+Za zadanu gramatiku odrediti tip gramatike i konstruirati potisni automat:  \cite[str.~84-100]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) a<A><B>c
+<A> \(\to\) b<B><C>
+<B> \(\to\) cde
+<C> \(\to\) \(\varepsilon\)
+\end{alltt}
+
 % 2009 - 2MI - 8 - (3)
 \item
 Za zadanu gramatiku izgradite parser zasnovan na tehnici \emph{Pomakni-Pronađi}. \cite[str.~121-123]{udzbenik} \cite{auditorne}
@@ -1660,6 +1724,17 @@ Automat prikažite u tabličnom obliku. \cite[str.~99]{udzbenik}
 <A> \(\to\) ca<B> | dc<A>a
 <B> \(\to\) a<A><S>d | b<S>d
 \end{alltt} 
+
+\item
+Konstruirajte potisni automat za navedenu LL(1)-gramatiku.
+Automat prikažite u tabličnom obliku.
+Za određivanje PRIMIJENI skupova nije potrebno koristiti algoritam od 12 koraka, ali je za konstrukciju potisnog automata potrebno pridržavati se postupka iz udžbenika.  \cite[str.~99]{udzbenik}
+
+\begin{alltt}
+<S> \(\to\) <B> b | c b a a <A> | \(\varepsilon\)
+<A> \(\to\) c a <B> | d c <A> a
+<B> \(\to\) a <A> <S> d | b <S> d
+\end{alltt}
 
 % 2009 - P1MI - 9 - (3)
 % 2010 - P3MI-L - 7 - (3)
@@ -1814,6 +1889,30 @@ $\bigtriangledown$ & 2 & 2 & 2 & 2 & 2 & 8 \\ \hline
 8: Prihvati; \\
 %aud/prim 10
 
+\item
+Za zadanu tablicu potisnog automata rekonstruirati gramatiku i odrediti tip gramatike. \cite[str.~85-99]{udzbenik} \cite{auditorne}
+
+\begin{tabular}{|c|c|c|c|c|c|c|} \hline
+& e & a & b & c & d & $\perp$ \\ \hline
+$<$S$>$ & 1 & 2 & 2 & 1 & 2 & 2 \\ \hline
+$<$A$>$ & 3 & 2 & 2 & 3 & 2 & 2 \\ \hline
+$<$D$>$ & 8 & 2 & 2 & 4 & 2 & 2 \\ \hline
+$<$B$>$ & 2 & 5 & 2 & 2 & 7 & 7 \\ \hline
+$<$C$>$ & 2 & 7 & 6 & 2 & 7 & 7 \\ \hline
+d & 2 & 2 & 2 & 2 & 7 & 7 \\ \hline
+$\bigtriangledown$ & 2 & 2 & 2 & 2 & 2 & 9 \\ \hline
+\end{tabular}
+
+1: Zamijeni($<$B$>$$<$A$>$); Zadrži; \\
+2: Odbaci; \\
+3: Zamijeni($<$C$>$$<$D$>$); Zadrži; \\
+4: Zamijeni($<$S$>$); Pomakni; \\
+5: Zamijeni($<$B$>$$<$A$>$); Pomakni; \\
+6: Zamijeni($<$C$>$$<$D$>$); Pomakni; \\
+7: Izvuci; Zadrži; \\
+8: Izvuci; Pomakni; \\
+9: Prihvati; \\
+
 % AV - 8 - (3)
 \item
 Odredite produkcije gramatike na temelju koje je konstruiran sljedeći potisni automat. \cite[str.~85-99]{udzbenik} \cite{auditorne}
@@ -1889,6 +1988,30 @@ R2 = Reduciraj ( <A> \(\to\) b <B> c )
 R3 = Reduciraj ( <B> \(\to\) b )
 \end{alltt}
 %aud/prim 12
+
+\item
+Prikažite korake tijekom parsiranja niza \texttt{dccd} primjenom zadanog LR(1)-parsera. \cite[str.~141-144]{udzbenik} \cite{auditorne}\\
+
+\begin{tabular}{| c || c | c | c || c | c | } \hline
+Stanje & \multicolumn{3}{|c||}{Akcija} & \multicolumn{2}{|c|}{Novo stanje} \\ \hline
+& c & d & $\perp$ & $<$S$>$ & $<$C$>$ \\ \hline
+0 & P3 & P4 & & S1 & S2 \\ \hline
+1 & & & Prihvati() & & \\ \hline
+2 & P6 & P7 & & & S5 \\ \hline
+3 & P3 & P4 & & & S8 \\ \hline
+4 & R1 & R3 & & & \\ \hline
+5 & & & R1 & & \\ \hline
+6 & P6 & P7 & & & S9 \\ \hline
+7 & & & R3 & & \\ \hline
+8 & R2 & R2 & & & \\ \hline
+9 & & & R2 & & \\ \hline
+\end{tabular}
+
+\begin{alltt}
+R1 = Reduciraj ( <S> \(\to\) <C> <C> )
+R2 = Reduciraj ( <C> \(\to\) c <C> )
+R3 = Reduciraj ( <C> \(\to\) d )
+\end{alltt}
 
 % 2003 - 2MI - 7 - (3)
 \item
@@ -2275,6 +2398,16 @@ Izgradite atributnu prijevodnu gramatiku koja parsira nizove koji predstavljaju 
 U gramatici za broj koji predstavlja \texttt{x} ili \texttt{y} koordinatu točke koristiti završni znak \texttt{b}.
 Proširite gramatiku svojstvima i akcijskim znakovima koji računaju koordinate težišta multiskupa tako da sva pravila računanja budu pravila preslikavanja. \cite[str.~178-180]{udzbenik}
 
+\item
+Izgradite atributnu prijevodnu gramatiku koja parsira nizove nenegativnih cijelih dekadskih brojeva zapisane u obliku:
+
+\begin{alltt}
+\verb|{|a1, a2, a3, ..., an\verb|}|
+\end{alltt}
+
+Proširite gramatiku svojstvima i akcijskim znakovima koji pronalaze broj u zadanom nizu s najvećom vrijednošću, tako da sva pravila računanja budu pravila preslikavanja.
+Nizovi mogu biti proizvoljne duljine. \cite[str.~178-180]{udzbenik}
+
 % 2004 - 2MI - 6 - (4)
 \item
 Opišite postupak izgradnje potisnog automata za prijevodnu gramatiku. \cite[str.~184-195]{udzbenik}
@@ -2293,7 +2426,8 @@ Nabrojite i objasnite formalne modele semantičkog analizatora. \cite[str.~169-1
 
 % 2003 - 2MI - 8 - (4)
 \item
-Definirajte L-atributnu prijevodnu gramatiku. \cite[str.~180-181]{udzbenik}
+Definirajte L-atributnu prijevodnu gramatiku, odnosno navedite sva tri pravila računanja vrijednosti svojstava kod L-atributne prijevodne gramatike.
+. \cite[str.~180-181]{udzbenik}
 
 % 2009 - 2MI - 4 - (4)
 % 2000 - 2MI - 7 - (4)
@@ -2319,6 +2453,9 @@ Objasnite kako se obrađuju izvedena svojstva izlaznih završnih znakova koji se
 % 2002 - 2MI - 7 - (4)
 \item
 Navedite i objasnite algoritam ispitivanja jednakosti obilježja konstantnih vrijednosti. \cite[str.~203-204]{udzbenik}
+
+\item
+Navedite po dva primjera leksičkih, sintaksnih i semantičkih pravila programskog jezika C ili sličnog jezika.
 
 % 2009 - 2MI - 5 - (4)
 \item
@@ -2702,7 +2839,7 @@ X = 20;
 % 2007 - 3MI - 2 - (6)
 % 2009 - P2MI-L - 3 - (6)
 \item
-Navedite oblike međukôda te za svaki oblik navedite primjere. \cite[str.~255-261]{udzbenik}
+Navedite tri oblika međukoda te objasnite općeniti izgled međukoda svakog oblika. \cite[str.~255-261]{udzbenik}
 
 % 2009 - 3MI - 6 - (6)
 \item
@@ -2891,6 +3028,9 @@ Objasnite generiranje ciljnog programa na temelju postfiksnog sustava oznaka. \c
 % 2003 - 3MI - 8 - (7)
 \item
 Opišite postupak izrade adresa naredbama. \cite[str.~268]{udzbenik}
+
+\item
+Općenito definirajte (ne na primjeru) ulaze i izlaze iz programa semantičkog analizatora i generatora ciljnog programa ako su oba programa ostvareni kao zasebni prolazi jezičnog procesora.
 
 % 2010 - P3MI - 4 - (7)
 \item
